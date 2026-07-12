@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprachpass — Deutsch A1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1EBDA; --paper-dark:#E7DFC7;
+    --navy:#1E2B45; --navy-deep:#131D30;
+    --stamp-red:#A23A2A; --stamp-gold:#AD8A2E;
+    --ink:#2B2620; --ink-soft:#5B5445;
+    --line:#C9BFA0; --green:#3F6B4F; --wrong:#9C3B3B;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased;}
+  .app{max-width:920px; margin:0 auto; padding:0 0 60px;
+    background:repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(43,38,32,0.035) 28px); min-height:100vh;}
+
+  .cover{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%); color:var(--paper);
+    padding:36px 28px 30px; position:relative; overflow:hidden; border-bottom:6px solid var(--stamp-gold);}
+  .cover::before{content:""; position:absolute; inset:10px; border:1px solid rgba(241,235,218,0.25); pointer-events:none;}
+  .cover-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--stamp-gold); margin:0 0 10px;}
+  .cover-title{font-family:'Fraunces',serif; font-weight:700; font-size:42px; line-height:1.05; margin:0 0 8px; letter-spacing:-.01em;}
+  .cover-sub{font-size:14.5px; color:rgba(241,235,218,0.75); max-width:560px; line-height:1.55; margin:0;}
+  .cover-meta{margin-top:22px; display:flex; gap:26px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:rgba(241,235,218,0.65); flex-wrap:wrap;}
+  .cover-meta b{color:var(--paper); font-weight:600;}
+
+  .tabs{display:flex; background:var(--paper-dark); border-bottom:2px solid var(--navy); position:sticky; top:0; z-index:20;}
+  .tab{flex:1; padding:14px 10px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:.08em;
+    text-transform:uppercase; font-weight:600; color:var(--ink-soft); cursor:pointer; border:none; background:transparent;
+    border-right:1px solid var(--line); transition:background .15s,color .15s;}
+  .tab:last-child{border-right:none;}
+  .tab.active{background:var(--navy); color:var(--paper);}
+  .tab .count{display:block; font-family:'IBM Plex Sans',sans-serif; font-size:10px; font-weight:400; margin-top:3px; opacity:.65; text-transform:none; letter-spacing:0;}
+
+  .page{padding:26px 24px 10px;}
+  .page-intro{font-size:13.5px; color:var(--ink-soft); line-height:1.6; max-width:640px; margin:0 0 22px;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px;}
+  .cat-card{background:#fff; border:1px solid var(--line); border-radius:3px; padding:16px 14px; cursor:pointer;
+    position:relative; text-align:left; transition:transform .12s,box-shadow .12s; box-shadow:0 1px 0 rgba(43,38,32,0.05);}
+  .cat-card:hover{transform:translateY(-2px); box-shadow:0 6px 14px rgba(30,43,69,0.12);}
+  .cat-card .cat-title{font-family:'Fraunces',serif; font-weight:600; font-size:16.5px; margin:0 0 4px; color:var(--navy);}
+  .cat-card .cat-count{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin:0;}
+  .stamp{position:absolute; top:8px; right:8px; width:34px; height:34px; transform:rotate(-14deg); opacity:0; transition:opacity .2s; pointer-events:none;}
+  .cat-card.done .stamp,.topic.done .stamp{opacity:1;}
+  .stamp svg{width:100%; height:100%; display:block;}
+
+  .back-btn{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--navy); background:none; border:none; cursor:pointer; padding:0 0 18px; display:flex; align-items:center; gap:6px;}
+  .back-btn:hover{color:var(--stamp-red);}
+  .cat-header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+  .cat-header h2{font-family:'Fraunces',serif; font-size:26px; margin:0; color:var(--navy);}
+  .header-btns{display:flex; gap:8px; flex-wrap:wrap;}
+  .mark-btn,.quiz-btn{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    border:none; padding:9px 16px; border-radius:2px; cursor:pointer;}
+  .mark-btn{background:var(--navy); color:var(--paper);}
+  .mark-btn.done{background:var(--green);}
+  .quiz-btn{background:var(--stamp-red); color:#fff;}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;}
+  .flashcard{background:#fff; border:1px solid var(--line); border-radius:3px; padding:14px 16px; cursor:pointer;
+    min-height:86px; display:flex; flex-direction:column; justify-content:center; position:relative;}
+  .flashcard .de{font-family:'Fraunces',serif; font-weight:600; font-size:18px; color:var(--navy);}
+  .flashcard .article{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--stamp-red); margin-right:6px;}
+  .flashcard .tr{margin-top:7px; font-size:13.5px; color:var(--ink-soft); display:none;}
+  .flashcard.flipped .tr{display:block;}
+  .flashcard .hint{position:absolute; bottom:7px; right:10px; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--line);}
+
+  .topic-list{display:flex; flex-direction:column; gap:10px;}
+  .topic{background:#fff; border:1px solid var(--line); border-radius:3px; position:relative; overflow:hidden;}
+  .topic-head{display:flex; align-items:center; justify-content:space-between; padding:15px 18px; cursor:pointer; gap:10px;}
+  .topic-head h3{font-family:'Fraunces',serif; font-size:17px; margin:2px 0 0; color:var(--navy); font-weight:600;}
+  .topic-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-soft); letter-spacing:.05em;}
+  .chevron{font-family:'IBM Plex Mono',monospace; color:var(--ink-soft); transition:transform .15s; font-size:13px;}
+  .topic.open .chevron{transform:rotate(90deg);}
+  .topic-body{max-height:0; overflow:hidden; transition:max-height .3s ease; padding:0 18px; border-top:1px solid transparent;}
+  .topic.open .topic-body{max-height:3000px; padding:0 18px 18px; border-top:1px solid var(--line);}
+  .topic-body p{font-size:13.5px; line-height:1.65; margin:14px 0 10px;}
+  .example-box{background:var(--paper); border-left:3px solid var(--stamp-gold); padding:10px 14px; margin:8px 0;
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7; color:var(--navy);}
+  .example-box .tr-line{display:block; color:var(--ink-soft); font-family:'IBM Plex Sans',sans-serif; font-size:12px; font-style:italic;}
+  table.gtable{border-collapse:collapse; margin:10px 0; font-size:12.5px; width:100%;}
+  table.gtable th,table.gtable td{border:1px solid var(--line); padding:6px 10px; text-align:left;}
+  table.gtable th{background:var(--paper-dark); font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.04em;}
+  .topic-actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .topic-mark{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+    background:none; border:1px solid var(--navy); color:var(--navy); padding:7px 14px; border-radius:2px; cursor:pointer;}
+  .topic-mark.done{background:var(--green); border-color:var(--green); color:#fff;}
+  .topic-quiz-btn{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+    background:var(--stamp-red); border:1px solid var(--stamp-red); color:#fff; padding:7px 14px; border-radius:2px; cursor:pointer;}
+
+  /* Quiz overlay */
+  .quiz-overlay{position:fixed; inset:0; background:rgba(19,29,48,0.85); z-index:50; display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:30px 16px;}
+  .quiz-overlay.show{display:flex;}
+  .quiz-panel{background:var(--paper); border:2px solid var(--stamp-gold); border-radius:4px; max-width:560px; width:100%; padding:26px 26px 22px; position:relative;}
+  .quiz-panel h3{font-family:'Fraunces',serif; font-size:22px; margin:0 0 4px; color:var(--navy);}
+  .quiz-progress{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); margin-bottom:16px;}
+  .quiz-q{font-size:16px; font-weight:600; margin:0 0 14px; line-height:1.5;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{background:#fff; border:1px solid var(--line); border-radius:3px; padding:11px 14px; font-size:14px; text-align:left; cursor:pointer; transition:border-color .1s;}
+  .quiz-opt:hover{border-color:var(--navy);}
+  .quiz-opt.correct{background:#E8F0E9; border-color:var(--green); color:var(--green); font-weight:600;}
+  .quiz-opt.wrong{background:#F5E4E2; border-color:var(--wrong); color:var(--wrong);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-next{margin-top:16px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    background:var(--navy); color:var(--paper); border:none; padding:10px 18px; border-radius:2px; cursor:pointer; display:none;}
+  .quiz-next.show{display:inline-block;}
+  .quiz-close{position:absolute; top:10px; right:12px; background:none; border:none; font-size:20px; color:var(--ink-soft); cursor:pointer;}
+  .quiz-result{text-align:center; padding:14px 0 4px;}
+  .quiz-result .score{font-family:'Fraunces',serif; font-size:44px; font-weight:700; color:var(--navy); margin:6px 0;}
+  .quiz-result .verdict{font-size:14px; color:var(--ink-soft); margin-bottom:14px;}
+  .quiz-result .verdict.pass{color:var(--green); font-weight:600;}
+
+  .progress-bar-wrap{padding:18px 24px 26px;}
+  .progress-label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); letter-spacing:.05em; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between;}
+  .progress-track{height:8px; background:var(--paper-dark); border:1px solid var(--line); border-radius:4px; overflow:hidden;}
+  .progress-fill{height:100%; background:linear-gradient(90deg,var(--stamp-gold),var(--stamp-red)); width:0%; transition:width .3s;}
+
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:10px 0;}
+  .table-scroll table.gtable{margin:0; min-width:340px;}
+
+  /* ===== Responsive ===== */
+  @media(max-width:680px){
+    .page{padding:20px 14px 8px;}
+    .cover{padding:26px 18px 22px;}
+    .cover-meta{gap:14px; font-size:10.5px;}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:9px;}
+    .cat-card{padding:12px 11px;}
+    .cat-card .cat-title{font-size:14.5px;}
+    .cards{grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:9px;}
+    .flashcard{padding:12px 12px; min-height:78px;}
+    .flashcard .de{font-size:15.5px;}
+    .flashcard .tr{font-size:12.5px;}
+    .cat-header h2{font-size:21px;}
+    .header-btns{width:100%;}
+    .mark-btn,.quiz-btn{flex:1; padding:12px 10px; font-size:10.5px;}
+    .topic-head{padding:13px 14px;}
+    .topic-head h3{font-size:15.5px;}
+    .topic.open .topic-body{padding:0 14px 16px;}
+    .topic-body p{font-size:13px;}
+    .example-box{font-size:12px; padding:9px 12px;}
+    table.gtable{font-size:11.5px;}
+    table.gtable th,table.gtable td{padding:5px 7px;}
+    .topic-actions{flex-direction:column;}
+    .topic-mark,.topic-quiz-btn{width:100%; padding:12px 14px; text-align:center;}
+    .progress-bar-wrap{padding:16px 14px 22px;}
+  }
+  @media(max-width:520px){
+    .cover-title{font-size:30px;}
+    .cover-sub{font-size:13.5px;}
+    .tab{font-size:10.5px; padding:12px 4px; letter-spacing:.04em;}
+    .tab .count{font-size:9px;}
+    .quiz-overlay{padding:12px 8px; align-items:stretch;}
+    .quiz-panel{padding:20px 16px 18px; max-width:none; border-radius:6px; margin:auto 0;}
+    .quiz-panel h3{font-size:18px; padding-right:28px;}
+    .quiz-q{font-size:15px;}
+    .quiz-opt{padding:13px 13px; font-size:14px;}
+    .quiz-next{width:100%; padding:13px; text-align:center;}
+    .quiz-result .score{font-size:36px;}
+  }
+  @media(max-width:360px){
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .cards{grid-template-columns:repeat(2,1fr);}
+    .cover-title{font-size:26px;}
+  }
+  @media(hover:none){
+    .cat-card:hover{transform:none; box-shadow:0 1px 0 rgba(43,38,32,0.05);}
+    .cat-card:active{background:var(--paper-dark);}
+    .quiz-opt:active{border-color:var(--navy);}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="cover">
+    <p class="cover-eyebrow">Goethe · Niveau A1 · Start Deutsch 1</p>
+    <h1 class="cover-title">Sprachpass</h1>
+    <p class="cover-sub">Almanca A1 için tam kapsamlı kelime hazinesi, konu anlatımı ve konu sonu testleri. Testi geçince (%75+) pasaportuna damga otomatik basılır.</p>
+    <div class="cover-meta">
+      <span>KELİME: <b id="metaVocabTotal">–</b></span>
+      <span>GRAMER KONUSU: <b id="metaGrammarTotal">–</b></span>
+      <span>DURUM: <b id="metaStatus">Yükleniyor…</b></span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="wortschatz">Wortschatz<span class="count">Kelime Bilgisi</span></button>
+    <button class="tab" data-tab="grammatik">Grammatik<span class="count">Konu Anlatımı + Test</span></button>
+  </div>
+
+  <div class="page" id="page-wortschatz">
+    <p class="page-intro">Goethe A1 kelime listesine dayalı tematik gruplar. Kartlara tıklayarak Türkçesini gör; hazır hissedince kategori testine gir. %75 ve üzeri başarı kategoriyi otomatik damgalar.</p>
+    <div id="vocabOverview" class="grid"></div>
+    <div id="vocabDetail" style="display:none;"></div>
+  </div>
+
+  <div class="page" id="page-grammatik" style="display:none;">
+    <p class="page-intro">Eksiksiz A1 gramer müfredatı: her konuda Türkçe anlatım, tablolar, örnekler ve konu sonu testi.</p>
+    <div id="grammarList" class="topic-list"></div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label"><span>Genel İlerleme</span><span id="progressPct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div class="quiz-overlay" id="quizOverlay">
+  <div class="quiz-panel">
+    <button class="quiz-close" id="quizClose">✕</button>
+    <h3 id="quizTitle">Test</h3>
+    <p class="quiz-progress" id="quizProgress"></p>
+    <div id="quizBody"></div>
+  </div>
+</div>
+
+<script>
+const STAMP_SVG = `<svg viewBox="0 0 100 100"><g fill="none" stroke="#A23A2A" stroke-width="4"><circle cx="50" cy="50" r="42" stroke-dasharray="6 4"/></g><text x="50" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#A23A2A" transform="rotate(-8 50 50)">GEPRÜFT</text><text x="50" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#A23A2A" transform="rotate(-8 50 50)">A1 · OK</text></svg>`;
+
+// =============== VOCABULARY (Goethe A1 tematik gruplar) ===============
+const V = (de,tr,article)=> article ? {de,tr,article} : {de,tr};
+const vocabCategories = [{"id":"zahlen","title":"Zahlen (0–1000)","words":[{"de":"null","tr":"sıfır"},{"de":"eins","tr":"bir"},{"de":"zwei","tr":"iki"},{"de":"drei","tr":"üç"},{"de":"vier","tr":"dört"},{"de":"fünf","tr":"beş"},{"de":"sechs","tr":"altı"},{"de":"sieben","tr":"yedi"},{"de":"acht","tr":"sekiz"},{"de":"neun","tr":"dokuz"},{"de":"zehn","tr":"on"},{"de":"elf","tr":"on bir"},{"de":"zwölf","tr":"on iki"},{"de":"dreizehn","tr":"on üç"},{"de":"vierzehn","tr":"on dört"},{"de":"fünfzehn","tr":"on beş"},{"de":"sechzehn","tr":"on altı"},{"de":"siebzehn","tr":"on yedi"},{"de":"achtzehn","tr":"on sekiz"},{"de":"neunzehn","tr":"on dokuz"},{"de":"zwanzig","tr":"yirmi"},{"de":"einundzwanzig","tr":"yirmi bir"},{"de":"dreißig","tr":"otuz"},{"de":"vierzig","tr":"kırk"},{"de":"fünfzig","tr":"elli"},{"de":"sechzig","tr":"altmış"},{"de":"siebzig","tr":"yetmiş"},{"de":"achtzig","tr":"seksen"},{"de":"neunzig","tr":"doksan"},{"de":"hundert","tr":"yüz"},{"de":"zweihundert","tr":"iki yüz"},{"de":"tausend","tr":"bin"},{"de":"die Million","tr":"milyon","article":"die"},{"de":"die Milliarde","tr":"milyar","article":"die"}]},{"id":"ordinal","title":"Ordinalzahlen & Datum","words":[{"de":"erste","tr":"birinci"},{"de":"zweite","tr":"ikinci"},{"de":"dritte","tr":"üçüncü"},{"de":"vierte","tr":"dördüncü"},{"de":"fünfte","tr":"beşinci"},{"de":"sechste","tr":"altıncı"},{"de":"siebte","tr":"yedinci"},{"de":"zehnte","tr":"onuncu"},{"de":"das Datum","tr":"tarih","article":"das"},{"de":"der Geburtstag","tr":"doğum günü","article":"der"},{"de":"das Jahr","tr":"yıl","article":"das"},{"de":"der Monat","tr":"ay","article":"der"},{"de":"die Woche","tr":"hafta","article":"die"},{"de":"der Tag","tr":"gün","article":"der"}]},{"id":"wochentage","title":"Wochentage","words":[{"de":"der Montag","tr":"pazartesi","article":"der"},{"de":"der Dienstag","tr":"salı","article":"der"},{"de":"der Mittwoch","tr":"çarşamba","article":"der"},{"de":"der Donnerstag","tr":"perşembe","article":"der"},{"de":"der Freitag","tr":"cuma","article":"der"},{"de":"der Samstag","tr":"cumartesi","article":"der"},{"de":"der Sonntag","tr":"pazar","article":"der"},{"de":"das Wochenende","tr":"hafta sonu","article":"das"},{"de":"der Werktag","tr":"iş günü","article":"der"},{"de":"der Sonnabend","tr":"cumartesi (kuzey Almanya)","article":"der"}]},{"id":"monate","title":"Monate","words":[{"de":"der Januar","tr":"ocak","article":"der"},{"de":"der Februar","tr":"şubat","article":"der"},{"de":"der März","tr":"mart","article":"der"},{"de":"der April","tr":"nisan","article":"der"},{"de":"der Mai","tr":"mayıs","article":"der"},{"de":"der Juni","tr":"haziran","article":"der"},{"de":"der Juli","tr":"temmuz","article":"der"},{"de":"der August","tr":"ağustos","article":"der"},{"de":"der September","tr":"eylül","article":"der"},{"de":"der Oktober","tr":"ekim","article":"der"},{"de":"der November","tr":"kasım","article":"der"},{"de":"der Dezember","tr":"aralık","article":"der"}]},{"id":"jahreszeiten","title":"Jahreszeiten & Feiertage","words":[{"de":"der Frühling","tr":"ilkbahar","article":"der"},{"de":"der Sommer","tr":"yaz","article":"der"},{"de":"der Herbst","tr":"sonbahar","article":"der"},{"de":"der Winter","tr":"kış","article":"der"},{"de":"Weihnachten","tr":"Noel"},{"de":"Ostern","tr":"Paskalya"},{"de":"Silvester","tr":"yılbaşı gecesi"},{"de":"Neujahr","tr":"yeni yıl"},{"de":"der Feiertag","tr":"resmi tatil","article":"der"},{"de":"die Ferien","tr":"tatil (okul)"},{"de":"der Urlaub","tr":"tatil/izin","article":"der"},{"de":"die Party","tr":"parti","article":"die"},{"de":"das Frühjahr","tr":"ilkbahar (eş anlamlı)","article":"das"}]},{"id":"tageszeiten","title":"Tageszeiten & Uhrzeit","words":[{"de":"der Morgen","tr":"sabah","article":"der"},{"de":"der Vormittag","tr":"öğleden önce","article":"der"},{"de":"der Mittag","tr":"öğle","article":"der"},{"de":"der Nachmittag","tr":"öğleden sonra","article":"der"},{"de":"der Abend","tr":"akşam","article":"der"},{"de":"die Nacht","tr":"gece","article":"die"},{"de":"die Uhr","tr":"saat (alet)","article":"die"},{"de":"die Stunde","tr":"saat (süre)","article":"die"},{"de":"die Minute","tr":"dakika","article":"die"},{"de":"die Sekunde","tr":"saniye","article":"die"},{"de":"halb","tr":"buçuk"},{"de":"Viertel","tr":"çeyrek"},{"de":"pünktlich","tr":"dakik"},{"de":"früh","tr":"erken"},{"de":"spät","tr":"geç"}]},{"id":"zeitangaben","title":"Zeitangaben & Häufigkeit","words":[{"de":"heute","tr":"bugün"},{"de":"morgen","tr":"yarın"},{"de":"gestern","tr":"dün"},{"de":"übermorgen","tr":"öbür gün"},{"de":"jetzt","tr":"şimdi"},{"de":"gleich","tr":"hemen/birazdan"},{"de":"später","tr":"daha sonra"},{"de":"zuerst","tr":"önce/ilk olarak"},{"de":"dann","tr":"sonra"},{"de":"immer","tr":"her zaman"},{"de":"oft","tr":"sık sık"},{"de":"manchmal","tr":"bazen"},{"de":"selten","tr":"nadiren"},{"de":"nie","tr":"asla"},{"de":"schon","tr":"zaten/şimdiden"},{"de":"noch","tr":"hâlâ/daha"},{"de":"bald","tr":"yakında"},{"de":"lange","tr":"uzun süre"},{"de":"der Anfang","tr":"başlangıç","article":"der"},{"de":"das Ende","tr":"son","article":"das"},{"de":"der Schluss","tr":"son / bitiş","article":"der"},{"de":"die Zeit","tr":"zaman / vakit","article":"die"}]},{"id":"himmelsrichtungen","title":"Himmelsrichtungen & Orte","words":[{"de":"der Norden","tr":"kuzey","article":"der"},{"de":"der Süden","tr":"güney","article":"der"},{"de":"der Osten","tr":"doğu","article":"der"},{"de":"der Westen","tr":"batı","article":"der"},{"de":"links","tr":"sol"},{"de":"rechts","tr":"sağ"},{"de":"geradeaus","tr":"dümdüz"},{"de":"oben","tr":"yukarıda"},{"de":"unten","tr":"aşağıda"},{"de":"hier","tr":"burada"},{"de":"dort","tr":"orada"},{"de":"weit","tr":"uzak"},{"de":"nah","tr":"yakın"}]},{"id":"farben","title":"Farben","words":[{"de":"rot","tr":"kırmızı"},{"de":"blau","tr":"mavi"},{"de":"grün","tr":"yeşil"},{"de":"gelb","tr":"sarı"},{"de":"schwarz","tr":"siyah"},{"de":"weiß","tr":"beyaz"},{"de":"braun","tr":"kahverengi"},{"de":"grau","tr":"gri"},{"de":"orange","tr":"turuncu"},{"de":"rosa","tr":"pembe"},{"de":"lila","tr":"mor"},{"de":"dunkel","tr":"koyu"},{"de":"hell","tr":"açık (renk)"},{"de":"bunt","tr":"rengarenk"}]},{"id":"laender","title":"Länder & Nationalitäten","words":[{"de":"Deutschland","tr":"Almanya"},{"de":"deutsch","tr":"Alman/Almanca"},{"de":"die Türkei","tr":"Türkiye","article":"die"},{"de":"türkisch","tr":"Türk/Türkçe"},{"de":"Frankreich","tr":"Fransa"},{"de":"französisch","tr":"Fransız/Fransızca"},{"de":"Italien","tr":"İtalya"},{"de":"italienisch","tr":"İtalyan/İtalyanca"},{"de":"Spanien","tr":"İspanya"},{"de":"spanisch","tr":"İspanyol/İspanyolca"},{"de":"England","tr":"İngiltere"},{"de":"englisch","tr":"İngiliz/İngilizce"},{"de":"Österreich","tr":"Avusturya"},{"de":"die Schweiz","tr":"İsviçre","article":"die"},{"de":"Russland","tr":"Rusya"},{"de":"Polen","tr":"Polonya"},{"de":"das Ausland","tr":"yurt dışı","article":"das"},{"de":"der Ausländer","tr":"yabancı","article":"der"},{"de":"die Sprache","tr":"dil","article":"die"},{"de":"das Land","tr":"ülke","article":"das"},{"de":"der Deutsche","tr":"Alman","article":"der"},{"de":"Europa","tr":"Avrupa"},{"de":"der Europäer","tr":"Avrupalı","article":"der"},{"de":"europäisch","tr":"Avrupa'ya ait"},{"de":"ausländisch","tr":"yabancı (ülkeye ait)"}]},{"id":"masse","title":"Maße, Gewichte & Geld","words":[{"de":"das Kilo","tr":"kilo","article":"das"},{"de":"das Gramm","tr":"gram","article":"das"},{"de":"der Liter","tr":"litre","article":"der"},{"de":"der Meter","tr":"metre","article":"der"},{"de":"der Kilometer","tr":"kilometre","article":"der"},{"de":"das Stück","tr":"adet/parça","article":"das"},{"de":"die Flasche","tr":"şişe","article":"die"},{"de":"das Glas","tr":"bardak/kavanoz","article":"das"},{"de":"der Euro","tr":"euro","article":"der"},{"de":"der Cent","tr":"cent","article":"der"},{"de":"das Geld","tr":"para","article":"das"},{"de":"der Preis","tr":"fiyat","article":"der"},{"de":"die Rechnung","tr":"hesap/fatura","article":"die"},{"de":"billig","tr":"ucuz"},{"de":"teuer","tr":"pahalı"},{"de":"kostenlos","tr":"ücretsiz"},{"de":"bezahlen","tr":"ödemek"},{"de":"kosten","tr":"-e mal olmak"},{"de":"der Zentimeter","tr":"santimetre","article":"der"},{"de":"das Pfund","tr":"yarım kilo (500 g)","article":"das"},{"de":"das Prozent","tr":"yüzde","article":"das"}]},{"id":"familie","title":"Familie & Personen","words":[{"de":"die Familie","tr":"aile","article":"die"},{"de":"die Mutter","tr":"anne","article":"die"},{"de":"der Vater","tr":"baba","article":"der"},{"de":"die Eltern","tr":"ebeveynler"},{"de":"die Schwester","tr":"kız kardeş","article":"die"},{"de":"der Bruder","tr":"erkek kardeş","article":"der"},{"de":"die Geschwister","tr":"kardeşler"},{"de":"das Kind","tr":"çocuk","article":"das"},{"de":"das Baby","tr":"bebek","article":"das"},{"de":"der Sohn","tr":"oğul","article":"der"},{"de":"die Tochter","tr":"kız evlat","article":"die"},{"de":"die Großmutter","tr":"büyükanne","article":"die"},{"de":"der Großvater","tr":"büyükbaba","article":"der"},{"de":"die Oma","tr":"nine","article":"die"},{"de":"der Opa","tr":"dede","article":"der"},{"de":"der Onkel","tr":"amca/dayı","article":"der"},{"de":"die Tante","tr":"teyze/hala","article":"die"},{"de":"der Mann","tr":"adam/koca","article":"der"},{"de":"die Frau","tr":"kadın/eş","article":"die"},{"de":"der Junge","tr":"erkek çocuk","article":"der"},{"de":"das Mädchen","tr":"kız çocuk","article":"das"},{"de":"der Freund","tr":"erkek arkadaş/dost","article":"der"},{"de":"die Freundin","tr":"kız arkadaş/dost","article":"die"},{"de":"die Leute","tr":"insanlar"},{"de":"verheiratet","tr":"evli"},{"de":"ledig","tr":"bekar"},{"de":"geschieden","tr":"boşanmış"}]},{"id":"berufe","title":"Berufe & Arbeit","words":[{"de":"der Beruf","tr":"meslek","article":"der"},{"de":"die Arbeit","tr":"iş","article":"die"},{"de":"arbeiten","tr":"çalışmak"},{"de":"der Lehrer","tr":"öğretmen","article":"der"},{"de":"die Lehrerin","tr":"öğretmen (k)","article":"die"},{"de":"der Arzt","tr":"doktor","article":"der"},{"de":"die Ärztin","tr":"doktor (k)","article":"die"},{"de":"der Ingenieur","tr":"mühendis","article":"der"},{"de":"der Student","tr":"üniversite öğrencisi","article":"der"},{"de":"der Schüler","tr":"okul öğrencisi","article":"der"},{"de":"der Verkäufer","tr":"satış görevlisi","article":"der"},{"de":"der Koch","tr":"aşçı","article":"der"},{"de":"der Kellner","tr":"garson","article":"der"},{"de":"der Polizist","tr":"polis","article":"der"},{"de":"der Taxifahrer","tr":"taksi şoförü","article":"der"},{"de":"der Friseur","tr":"kuaför","article":"der"},{"de":"der Bäcker","tr":"fırıncı","article":"der"},{"de":"die Firma","tr":"şirket","article":"die"},{"de":"das Büro","tr":"ofis","article":"das"},{"de":"der Chef","tr":"patron/müdür","article":"der"},{"de":"der Kollege","tr":"iş arkadaşı","article":"der"},{"de":"der Kunde","tr":"müşteri","article":"der"},{"de":"arbeitslos","tr":"işsiz"},{"de":"der Termin","tr":"randevu","article":"der"}]},{"id":"schule","title":"Schule & Lernen","words":[{"de":"die Schule","tr":"okul","article":"die"},{"de":"die Universität","tr":"üniversite","article":"die"},{"de":"der Kurs","tr":"kurs","article":"der"},{"de":"der Unterricht","tr":"ders","article":"der"},{"de":"die Klasse","tr":"sınıf","article":"die"},{"de":"der Lehrer","tr":"öğretmen","article":"der"},{"de":"lernen","tr":"öğrenmek"},{"de":"studieren","tr":"üniversitede okumak"},{"de":"üben","tr":"alıştırma yapmak"},{"de":"wiederholen","tr":"tekrarlamak"},{"de":"verstehen","tr":"anlamak"},{"de":"fragen","tr":"sormak"},{"de":"antworten","tr":"cevap vermek"},{"de":"das Buch","tr":"kitap","article":"das"},{"de":"das Heft","tr":"defter","article":"das"},{"de":"der Stift","tr":"kalem","article":"der"},{"de":"das Papier","tr":"kağıt","article":"das"},{"de":"die Aufgabe","tr":"görev/ödev","article":"die"},{"de":"die Hausaufgabe","tr":"ev ödevi","article":"die"},{"de":"die Prüfung","tr":"sınav","article":"die"},{"de":"der Test","tr":"test","article":"der"},{"de":"der Fehler","tr":"hata","article":"der"},{"de":"richtig","tr":"doğru"},{"de":"falsch","tr":"yanlış"},{"de":"die Frage","tr":"soru","article":"die"},{"de":"die Antwort","tr":"cevap","article":"die"},{"de":"das Beispiel","tr":"örnek","article":"das"},{"de":"das Wort","tr":"kelime","article":"das"},{"de":"der Satz","tr":"cümle","article":"der"},{"de":"buchstabieren","tr":"harf harf söylemek"},{"de":"der Kindergarten","tr":"anaokulu","article":"der"},{"de":"kulturell","tr":"kültürel"},{"de":"die Farbe","tr":"renk","article":"die"}]},{"id":"koerper","title":"Körper & Gesundheit","words":[{"de":"der Körper","tr":"vücut","article":"der"},{"de":"der Kopf","tr":"baş","article":"der"},{"de":"das Haar","tr":"saç","article":"das"},{"de":"das Gesicht","tr":"yüz","article":"das"},{"de":"das Auge","tr":"göz","article":"das"},{"de":"das Ohr","tr":"kulak","article":"das"},{"de":"die Nase","tr":"burun","article":"die"},{"de":"der Mund","tr":"ağız","article":"der"},{"de":"der Zahn","tr":"diş","article":"der"},{"de":"der Hals","tr":"boğaz/boyun","article":"der"},{"de":"der Arm","tr":"kol","article":"der"},{"de":"die Hand","tr":"el","article":"die"},{"de":"der Finger","tr":"parmak","article":"der"},{"de":"der Bauch","tr":"karın","article":"der"},{"de":"der Rücken","tr":"sırt","article":"der"},{"de":"das Bein","tr":"bacak","article":"das"},{"de":"der Fuß","tr":"ayak","article":"der"},{"de":"krank","tr":"hasta"},{"de":"gesund","tr":"sağlıklı"},{"de":"die Schmerzen","tr":"ağrılar"},{"de":"das Fieber","tr":"ateş (hastalık)","article":"das"},{"de":"die Erkältung","tr":"soğuk algınlığı","article":"die"},{"de":"der Arzt","tr":"doktor","article":"der"},{"de":"das Krankenhaus","tr":"hastane","article":"das"},{"de":"die Apotheke","tr":"eczane","article":"die"},{"de":"das Medikament","tr":"ilaç","article":"das"},{"de":"die Tablette","tr":"hap","article":"die"},{"de":"müde","tr":"yorgun"},{"de":"weh tun","tr":"ağrımak/acıtmak"},{"de":"baden","tr":"banyo yapmak"},{"de":"duschen","tr":"duş almak"},{"de":"die Dusche","tr":"duş","article":"die"},{"de":"waschen","tr":"yıkamak"},{"de":"die Praxis","tr":"muayenehane","article":"die"},{"de":"der Grad","tr":"derece","article":"der"},{"de":"das Gewicht","tr":"ağırlık","article":"das"},{"de":"hell","tr":"aydınlık / açık"}]},{"id":"kleidung","title":"Kleidung","words":[{"de":"die Kleidung","tr":"giysi","article":"die"},{"de":"die Hose","tr":"pantolon","article":"die"},{"de":"die Jeans","tr":"kot pantolon","article":"die"},{"de":"das Hemd","tr":"gömlek","article":"das"},{"de":"die Bluse","tr":"bluz","article":"die"},{"de":"das T-Shirt","tr":"tişört","article":"das"},{"de":"der Pullover","tr":"kazak","article":"der"},{"de":"die Jacke","tr":"ceket/mont","article":"die"},{"de":"der Mantel","tr":"palto","article":"der"},{"de":"das Kleid","tr":"elbise","article":"das"},{"de":"der Rock","tr":"etek","article":"der"},{"de":"der Anzug","tr":"takım elbise","article":"der"},{"de":"der Schuh","tr":"ayakkabı","article":"der"},{"de":"die Socke","tr":"çorap","article":"die"},{"de":"die Mütze","tr":"bere","article":"die"},{"de":"der Hut","tr":"şapka","article":"der"},{"de":"die Brille","tr":"gözlük","article":"die"},{"de":"die Tasche","tr":"çanta","article":"die"},{"de":"die Größe","tr":"beden/boyut","article":"die"},{"de":"anziehen","tr":"giymek"},{"de":"tragen","tr":"üzerinde taşımak/giymek"},{"de":"passen","tr":"uymak (beden)"},{"de":"(sich) ausziehen","tr":"(giysi) çıkarmak"}]},{"id":"essen","title":"Essen & Trinken","words":[{"de":"das Essen","tr":"yemek","article":"das"},{"de":"das Frühstück","tr":"kahvaltı","article":"das"},{"de":"das Mittagessen","tr":"öğle yemeği","article":"das"},{"de":"das Abendessen","tr":"akşam yemeği","article":"das"},{"de":"das Brot","tr":"ekmek","article":"das"},{"de":"das Brötchen","tr":"küçük ekmek","article":"das"},{"de":"die Butter","tr":"tereyağı","article":"die"},{"de":"der Käse","tr":"peynir","article":"der"},{"de":"das Ei","tr":"yumurta","article":"das"},{"de":"das Fleisch","tr":"et","article":"das"},{"de":"das Hähnchen","tr":"tavuk","article":"das"},{"de":"der Fisch","tr":"balık","article":"der"},{"de":"die Wurst","tr":"sosis/sucuk","article":"die"},{"de":"der Reis","tr":"pirinç","article":"der"},{"de":"die Nudeln","tr":"makarna"},{"de":"die Kartoffel","tr":"patates","article":"die"},{"de":"die Suppe","tr":"çorba","article":"die"},{"de":"der Salat","tr":"salata","article":"der"},{"de":"das Gemüse","tr":"sebze","article":"das"},{"de":"das Obst","tr":"meyve","article":"das"},{"de":"der Apfel","tr":"elma","article":"der"},{"de":"die Banane","tr":"muz","article":"die"},{"de":"die Orange","tr":"portakal","article":"die"},{"de":"die Tomate","tr":"domates","article":"die"},{"de":"der Zucker","tr":"şeker","article":"der"},{"de":"das Salz","tr":"tuz","article":"das"},{"de":"der Kuchen","tr":"kek/pasta","article":"der"},{"de":"die Schokolade","tr":"çikolata","article":"die"},{"de":"das Eis","tr":"dondurma","article":"das"},{"de":"das Wasser","tr":"su","article":"das"},{"de":"der Kaffee","tr":"kahve","article":"der"},{"de":"der Tee","tr":"çay","article":"der"},{"de":"die Milch","tr":"süt","article":"die"},{"de":"der Saft","tr":"meyve suyu","article":"der"},{"de":"essen","tr":"yemek yemek"},{"de":"trinken","tr":"içmek"},{"de":"schmecken","tr":"tadı olmak"},{"de":"lecker","tr":"lezzetli"},{"de":"der Hunger","tr":"açlık","article":"der"},{"de":"der Durst","tr":"susuzluk","article":"der"},{"de":"das Bier","tr":"bira","article":"das"},{"de":"der Wein","tr":"şarap","article":"der"},{"de":"die Birne","tr":"armut","article":"die"},{"de":"der Schinken","tr":"jambon","article":"der"},{"de":"die Pommes frites","tr":"patates kızartması"},{"de":"das Getränk","tr":"içecek","article":"das"},{"de":"die Lebensmittel","tr":"gıda maddeleri"},{"de":"bitter","tr":"acı (tat)"},{"de":"riechen","tr":"kokmak / koklamak"},{"de":"frühstücken","tr":"kahvaltı yapmak"},{"de":"grillen","tr":"ızgara yapmak"},{"de":"empfehlen","tr":"tavsiye etmek"},{"de":"die Zigarette","tr":"sigara","article":"die"},{"de":"rauchen","tr":"sigara içmek"}]},{"id":"restaurant","title":"Restaurant & Einkaufen","words":[{"de":"das Restaurant","tr":"restoran","article":"das"},{"de":"das Café","tr":"kafe","article":"das"},{"de":"die Speisekarte","tr":"menü","article":"die"},{"de":"bestellen","tr":"sipariş vermek"},{"de":"die Bedienung","tr":"servis/garson","article":"die"},{"de":"das Trinkgeld","tr":"bahşiş","article":"das"},{"de":"der Supermarkt","tr":"süpermarket","article":"der"},{"de":"der Markt","tr":"pazar","article":"der"},{"de":"das Geschäft","tr":"dükkan","article":"das"},{"de":"der Laden","tr":"mağaza","article":"der"},{"de":"die Bäckerei","tr":"fırın","article":"die"},{"de":"einkaufen","tr":"alışveriş yapmak"},{"de":"kaufen","tr":"satın almak"},{"de":"verkaufen","tr":"satmak"},{"de":"brauchen","tr":"ihtiyacı olmak"},{"de":"nehmen","tr":"almak"},{"de":"geben","tr":"vermek"},{"de":"möchten","tr":"istemek (kibar)"},{"de":"das Angebot","tr":"kampanya/teklif","article":"das"},{"de":"geöffnet","tr":"açık (dükkan)"},{"de":"geschlossen","tr":"kapalı"},{"de":"das Lokal","tr":"lokanta","article":"das"},{"de":"die Rechnung","tr":"hesap / fatura","article":"die"},{"de":"besetzt","tr":"dolu / meşgul"},{"de":"günstig","tr":"uygun fiyatlı"},{"de":"der Kiosk","tr":"büfe","article":"der"}]},{"id":"wohnen","title":"Wohnen & Möbel","words":[{"de":"das Haus","tr":"ev","article":"das"},{"de":"die Wohnung","tr":"daire","article":"die"},{"de":"das Zimmer","tr":"oda","article":"das"},{"de":"das Wohnzimmer","tr":"oturma odası","article":"das"},{"de":"das Schlafzimmer","tr":"yatak odası","article":"das"},{"de":"die Küche","tr":"mutfak","article":"die"},{"de":"das Bad","tr":"banyo","article":"das"},{"de":"die Toilette","tr":"tuvalet","article":"die"},{"de":"der Balkon","tr":"balkon","article":"der"},{"de":"der Garten","tr":"bahçe","article":"der"},{"de":"die Garage","tr":"garaj","article":"die"},{"de":"der Tisch","tr":"masa","article":"der"},{"de":"der Stuhl","tr":"sandalye","article":"der"},{"de":"das Sofa","tr":"kanepe","article":"das"},{"de":"das Bett","tr":"yatak","article":"das"},{"de":"der Schrank","tr":"dolap","article":"der"},{"de":"das Regal","tr":"raf","article":"das"},{"de":"die Lampe","tr":"lamba","article":"die"},{"de":"das Fenster","tr":"pencere","article":"das"},{"de":"die Tür","tr":"kapı","article":"die"},{"de":"der Schlüssel","tr":"anahtar","article":"der"},{"de":"die Wand","tr":"duvar","article":"die"},{"de":"der Boden","tr":"zemin","article":"der"},{"de":"die Treppe","tr":"merdiven","article":"die"},{"de":"der Aufzug","tr":"asansör","article":"der"},{"de":"die Miete","tr":"kira","article":"die"},{"de":"mieten","tr":"kiralamak"},{"de":"wohnen","tr":"oturmak/ikamet etmek"},{"de":"umziehen","tr":"taşınmak"},{"de":"die Adresse","tr":"adres","article":"die"},{"de":"vermieten","tr":"kiraya vermek"},{"de":"der Vermieter","tr":"ev sahibi","article":"der"},{"de":"das Dorf","tr":"köy","article":"das"},{"de":"der Ort","tr":"yer / kasaba","article":"der"},{"de":"ruhig","tr":"sakin"},{"de":"möglich","tr":"mümkün"},{"de":"normal","tr":"normal"},{"de":"einfach","tr":"kolay / basit"}]},{"id":"stadt","title":"Stadt & Orte","words":[{"de":"die Stadt","tr":"şehir","article":"die"},{"de":"das Dorf","tr":"köy","article":"das"},{"de":"die Straße","tr":"cadde/sokak","article":"die"},{"de":"der Platz","tr":"meydan","article":"der"},{"de":"das Zentrum","tr":"merkez","article":"das"},{"de":"die Post","tr":"postane","article":"die"},{"de":"die Bank","tr":"banka","article":"die"},{"de":"die Bibliothek","tr":"kütüphane","article":"die"},{"de":"das Kino","tr":"sinema","article":"das"},{"de":"das Theater","tr":"tiyatro","article":"das"},{"de":"das Museum","tr":"müze","article":"das"},{"de":"der Park","tr":"park","article":"der"},{"de":"das Schwimmbad","tr":"yüzme havuzu","article":"das"},{"de":"das Hotel","tr":"otel","article":"das"},{"de":"die Kirche","tr":"kilise","article":"die"},{"de":"die Moschee","tr":"cami","article":"die"},{"de":"das Rathaus","tr":"belediye binası","article":"das"},{"de":"die Polizei","tr":"polis (kurum)","article":"die"},{"de":"die Brücke","tr":"köprü","article":"die"},{"de":"der Weg","tr":"yol","article":"der"},{"de":"das Schild","tr":"tabela","article":"das"}]},{"id":"verkehr","title":"Verkehr & Reisen","words":[{"de":"der Verkehr","tr":"trafik","article":"der"},{"de":"das Auto","tr":"araba","article":"das"},{"de":"der Bus","tr":"otobüs","article":"der"},{"de":"die Bahn","tr":"tren/demiryolu","article":"die"},{"de":"der Zug","tr":"tren","article":"der"},{"de":"die U-Bahn","tr":"metro","article":"die"},{"de":"die Straßenbahn","tr":"tramvay","article":"die"},{"de":"das Taxi","tr":"taksi","article":"das"},{"de":"das Fahrrad","tr":"bisiklet","article":"das"},{"de":"das Flugzeug","tr":"uçak","article":"das"},{"de":"das Schiff","tr":"gemi","article":"das"},{"de":"der Bahnhof","tr":"gar","article":"der"},{"de":"die Haltestelle","tr":"durak","article":"die"},{"de":"der Flughafen","tr":"havalimanı","article":"der"},{"de":"die Fahrkarte","tr":"bilet","article":"die"},{"de":"das Ticket","tr":"bilet","article":"das"},{"de":"der Fahrplan","tr":"tarife","article":"der"},{"de":"die Abfahrt","tr":"kalkış","article":"die"},{"de":"die Ankunft","tr":"varış","article":"die"},{"de":"abfahren","tr":"hareket etmek"},{"de":"ankommen","tr":"varmak"},{"de":"einsteigen","tr":"binmek"},{"de":"aussteigen","tr":"inmek"},{"de":"umsteigen","tr":"aktarma yapmak"},{"de":"fahren","tr":"(araçla) gitmek"},{"de":"fliegen","tr":"uçmak"},{"de":"die Reise","tr":"seyahat","article":"die"},{"de":"reisen","tr":"seyahat etmek"},{"de":"der Koffer","tr":"bavul","article":"der"},{"de":"der Pass","tr":"pasaport","article":"der"},{"de":"das Problem","tr":"sorun","article":"das"}]},{"id":"freizeit","title":"Freizeit & Hobbys","words":[{"de":"die Freizeit","tr":"boş zaman","article":"die"},{"de":"das Hobby","tr":"hobi","article":"das"},{"de":"lesen","tr":"okumak"},{"de":"schreiben","tr":"yazmak"},{"de":"hören","tr":"dinlemek/duymak"},{"de":"die Musik","tr":"müzik","article":"die"},{"de":"singen","tr":"şarkı söylemek"},{"de":"tanzen","tr":"dans etmek"},{"de":"malen","tr":"resim yapmak"},{"de":"fotografieren","tr":"fotoğraf çekmek"},{"de":"spielen","tr":"oynamak/çalmak"},{"de":"das Spiel","tr":"oyun","article":"das"},{"de":"der Fußball","tr":"futbol","article":"der"},{"de":"der Sport","tr":"spor","article":"der"},{"de":"schwimmen","tr":"yüzmek"},{"de":"laufen","tr":"koşmak/yürümek"},{"de":"wandern","tr":"doğa yürüyüşü yapmak"},{"de":"kochen","tr":"yemek pişirmek"},{"de":"fernsehen","tr":"TV izlemek"},{"de":"der Film","tr":"film","article":"der"},{"de":"das Konzert","tr":"konser","article":"das"},{"de":"treffen","tr":"buluşmak"},{"de":"besuchen","tr":"ziyaret etmek"},{"de":"die Einladung","tr":"davet","article":"die"},{"de":"einladen","tr":"davet etmek"},{"de":"die Disco","tr":"disko","article":"die"},{"de":"die Pause","tr":"mola","article":"die"},{"de":"der Moment","tr":"an","article":"der"},{"de":"feiern","tr":"kutlamak"},{"de":"der Feierabend","tr":"mesai sonu","article":"der"},{"de":"das Geschenk","tr":"hediye","article":"das"},{"de":"scheinen","tr":"parlamak (güneş)"},{"de":"regnen","tr":"yağmak"}]},{"id":"wetter","title":"Wetter & Natur","words":[{"de":"das Wetter","tr":"hava durumu","article":"das"},{"de":"die Sonne","tr":"güneş","article":"die"},{"de":"der Regen","tr":"yağmur","article":"der"},{"de":"der Schnee","tr":"kar","article":"der"},{"de":"der Wind","tr":"rüzgar","article":"der"},{"de":"die Wolke","tr":"bulut","article":"die"},{"de":"der Himmel","tr":"gökyüzü","article":"der"},{"de":"es regnet","tr":"yağmur yağıyor"},{"de":"es schneit","tr":"kar yağıyor"},{"de":"warm","tr":"ılık/sıcak"},{"de":"kalt","tr":"soğuk"},{"de":"heiß","tr":"çok sıcak"},{"de":"kühl","tr":"serin"},{"de":"das Meer","tr":"deniz","article":"das"},{"de":"der See","tr":"göl","article":"der"},{"de":"der Fluss","tr":"nehir","article":"der"},{"de":"der Berg","tr":"dağ","article":"der"},{"de":"der Wald","tr":"orman","article":"der"},{"de":"der Baum","tr":"ağaç","article":"der"},{"de":"die Blume","tr":"çiçek","article":"die"},{"de":"das Tier","tr":"hayvan","article":"das"},{"de":"der Hund","tr":"köpek","article":"der"},{"de":"die Katze","tr":"kedi","article":"die"},{"de":"der Vogel","tr":"kuş","article":"der"}]},{"id":"adjektive","title":"Adjektive & Gefühle","words":[{"de":"gut","tr":"iyi"},{"de":"schlecht","tr":"kötü"},{"de":"schön","tr":"güzel"},{"de":"hässlich","tr":"çirkin"},{"de":"groß","tr":"büyük"},{"de":"klein","tr":"küçük"},{"de":"neu","tr":"yeni"},{"de":"alt","tr":"eski/yaşlı"},{"de":"jung","tr":"genç"},{"de":"lang","tr":"uzun"},{"de":"kurz","tr":"kısa"},{"de":"schnell","tr":"hızlı"},{"de":"langsam","tr":"yavaş"},{"de":"schwer","tr":"zor/ağır"},{"de":"leicht","tr":"kolay/hafif"},{"de":"wichtig","tr":"önemli"},{"de":"interessant","tr":"ilginç"},{"de":"langweilig","tr":"sıkıcı"},{"de":"frei","tr":"boş/özgür"},{"de":"voll","tr":"dolu"},{"de":"laut","tr":"gürültülü"},{"de":"leise","tr":"sessiz"},{"de":"sauber","tr":"temiz"},{"de":"schmutzig","tr":"kirli"},{"de":"glücklich","tr":"mutlu"},{"de":"traurig","tr":"üzgün"},{"de":"nett","tr":"nazik/hoş"},{"de":"freundlich","tr":"cana yakın"},{"de":"hungrig","tr":"aç"},{"de":"zufrieden","tr":"memnun"}]},{"id":"verben","title":"Wichtige Verben","words":[{"de":"sein","tr":"olmak"},{"de":"haben","tr":"sahip olmak"},{"de":"werden","tr":"olmak (gelecek)"},{"de":"gehen","tr":"gitmek (yürüyerek)"},{"de":"kommen","tr":"gelmek"},{"de":"machen","tr":"yapmak"},{"de":"sagen","tr":"söylemek"},{"de":"sprechen","tr":"konuşmak"},{"de":"sehen","tr":"görmek"},{"de":"hören","tr":"duymak"},{"de":"wissen","tr":"bilmek"},{"de":"kennen","tr":"tanımak"},{"de":"denken","tr":"düşünmek"},{"de":"glauben","tr":"inanmak/sanmak"},{"de":"finden","tr":"bulmak"},{"de":"suchen","tr":"aramak"},{"de":"helfen","tr":"yardım etmek"},{"de":"zeigen","tr":"göstermek"},{"de":"bringen","tr":"getirmek"},{"de":"holen","tr":"gidip getirmek"},{"de":"bleiben","tr":"kalmak"},{"de":"leben","tr":"yaşamak"},{"de":"schlafen","tr":"uyumak"},{"de":"aufstehen","tr":"kalkmak"},{"de":"warten","tr":"beklemek"},{"de":"beginnen","tr":"başlamak"},{"de":"anfangen","tr":"başlamak"},{"de":"aufhören","tr":"bitirmek/bırakmak"},{"de":"öffnen","tr":"açmak"},{"de":"schließen","tr":"kapatmak"},{"de":"bekommen","tr":"almak/edinmek"},{"de":"schicken","tr":"göndermek"},{"de":"anrufen","tr":"telefon etmek"},{"de":"erklären","tr":"açıklamak"},{"de":"vergessen","tr":"unutmak"},{"de":"gefallen","tr":"hoşuna gitmek"},{"de":"mögen","tr":"sevmek/hoşlanmak"},{"de":"lieben","tr":"sevmek (aşk)"},{"de":"heißen","tr":"adı olmak"},{"de":"wollen","tr":"istemek"},{"de":"abgeben","tr":"teslim etmek"},{"de":"abholen","tr":"gidip almak / karşılamak"},{"de":"anbieten","tr":"ikram etmek / sunmak"},{"de":"antworten","tr":"cevap vermek"},{"de":"bedeuten","tr":"anlamına gelmek"},{"de":"bitten","tr":"rica etmek"},{"de":"danken","tr":"teşekkür etmek"},{"de":"dauern","tr":"sürmek"},{"de":"enden","tr":"sona ermek"},{"de":"entschuldigen","tr":"affetmek"},{"de":"erlauben","tr":"izin vermek"},{"de":"erzählen","tr":"anlatmak"},{"de":"fehlen","tr":"eksik olmak"},{"de":"sich freuen","tr":"sevinmek"},{"de":"gehören","tr":"ait olmak"},{"de":"gewinnen","tr":"kazanmak (oyun)"},{"de":"lachen","tr":"gülmek"},{"de":"legen","tr":"koymak (yatay)"},{"de":"liegen","tr":"uzanmak / bulunmak"},{"de":"stehen","tr":"ayakta durmak / yazılı olmak"},{"de":"stellen","tr":"koymak (dikey)"},{"de":"sitzen","tr":"oturmak (fiziksel)"},{"de":"mitbringen","tr":"yanında getirmek"},{"de":"mitkommen","tr":"birlikte gelmek"},{"de":"mitmachen","tr":"katılmak"},{"de":"mitnehmen","tr":"yanına almak"},{"de":"kriegen","tr":"almak (günlük dil)"},{"de":"aussehen","tr":"görünmek"},{"de":"sich vorstellen","tr":"kendini tanıtmak"},{"de":"können","tr":"-ebilmek"},{"de":"müssen","tr":"zorunda olmak"},{"de":"sollen","tr":"-meli / -malı"},{"de":"dürfen","tr":"izinli olmak"},{"de":"tun","tr":"yapmak/etmek"}]},{"id":"kommunikation","title":"Kommunikation & Medien","words":[{"de":"das Telefon","tr":"telefon","article":"das"},{"de":"das Handy","tr":"cep telefonu","article":"das"},{"de":"die Nummer","tr":"numara","article":"die"},{"de":"anrufen","tr":"aramak"},{"de":"die E-Mail","tr":"e-posta","article":"die"},{"de":"der Brief","tr":"mektup","article":"der"},{"de":"die Postkarte","tr":"kartpostal","article":"die"},{"de":"schicken","tr":"göndermek"},{"de":"der Computer","tr":"bilgisayar","article":"der"},{"de":"das Internet","tr":"internet","article":"das"},{"de":"die Zeitung","tr":"gazete","article":"die"},{"de":"die Nachricht","tr":"haber/mesaj","article":"die"},{"de":"das Radio","tr":"radyo","article":"das"},{"de":"der Fernseher","tr":"televizyon","article":"der"},{"de":"das Foto","tr":"fotoğraf","article":"das"},{"de":"die Information","tr":"bilgi","article":"die"},{"de":"das Formular","tr":"form","article":"das"},{"de":"ausfüllen","tr":"doldurmak (form)"},{"de":"unterschreiben","tr":"imzalamak"},{"de":"die Unterschrift","tr":"imza","article":"die"}]},{"id":"redemittel","title":"Wichtige Ausdrücke","words":[{"de":"Hallo","tr":"merhaba"},{"de":"Guten Morgen","tr":"günaydın"},{"de":"Guten Tag","tr":"iyi günler"},{"de":"Guten Abend","tr":"iyi akşamlar"},{"de":"Gute Nacht","tr":"iyi geceler"},{"de":"Auf Wiedersehen","tr":"hoşça kalın"},{"de":"Tschüss","tr":"güle güle (samimi)"},{"de":"bitte","tr":"lütfen/rica ederim"},{"de":"danke","tr":"teşekkürler"},{"de":"Entschuldigung","tr":"özür dilerim/pardon"},{"de":"Es tut mir leid","tr":"üzgünüm"},{"de":"Wie bitte?","tr":"efendim? (anlamadım)"},{"de":"Guten Appetit","tr":"afiyet olsun"},{"de":"Alles Gute","tr":"her şey gönlünce olsun"},{"de":"Herzlichen Glückwunsch","tr":"tebrikler"},{"de":"Viel Glück","tr":"bol şans"},{"de":"Ja","tr":"evet"},{"de":"Nein","tr":"hayır"},{"de":"doch","tr":"hayır değil, öyle! (olumsuz soruya olumlu cevap)"},{"de":"vielleicht","tr":"belki"},{"de":"natürlich","tr":"tabii ki"},{"de":"genau","tr":"aynen/kesinlikle"},{"de":"leider","tr":"maalesef"},{"de":"kein Problem","tr":"sorun değil"},{"de":"gratulieren","tr":"tebrik etmek"},{"de":"der Gruß","tr":"selam","article":"der"},{"de":"herzlich","tr":"içten / candan"},{"de":"willkommen","tr":"hoş geldiniz"},{"de":"die Hilfe","tr":"yardım","article":"die"},{"de":"das Glück","tr":"şans / mutluluk","article":"das"},{"de":"Achtung","tr":"dikkat!"},{"de":"die Vorsicht","tr":"dikkat / tedbir","article":"die"},{"de":"der Dank","tr":"teşekkür","article":"der"},{"de":"fertig","tr":"hazır / bitmiş"},{"de":"verboten","tr":"yasak"},{"de":"lieb-","tr":"sevgili (Liebe Anna, ...)"},{"de":"Lieblings-","tr":"en sevdiği (Lieblingsfilm)"},{"de":"Auf Wiederhören","tr":"hoşça kalın (telefonda)"}]},{"id":"pronomen","title":"Pronomen & Begleiter","words":[{"de":"ich","tr":"ben"},{"de":"du","tr":"sen"},{"de":"er","tr":"o (eril)"},{"de":"sie","tr":"o (dişil) / onlar"},{"de":"es","tr":"o (nötr)"},{"de":"wir","tr":"biz"},{"de":"ihr","tr":"siz / onun (dişil)"},{"de":"Sie","tr":"Siz (kibar)"},{"de":"mich","tr":"beni"},{"de":"dich","tr":"seni"},{"de":"ihn","tr":"onu (eril)"},{"de":"ihm","tr":"ona (eril)"},{"de":"dir","tr":"sana"},{"de":"mir","tr":"bana"},{"de":"uns","tr":"bizi/bize"},{"de":"euch","tr":"sizi/size"},{"de":"sich","tr":"kendini"},{"de":"man","tr":"insan (genel özne)"},{"de":"mein","tr":"benim"},{"de":"dein-","tr":"senin"},{"de":"unser-","tr":"bizim"},{"de":"euer","tr":"sizin"},{"de":"dies-","tr":"bu"},{"de":"jed-","tr":"her (biri)"},{"de":"all-","tr":"hepsi/tüm"},{"de":"ander-","tr":"diğer/başka"},{"de":"beide","tr":"her ikisi"},{"de":"welch-","tr":"hangi"},{"de":"was für ein","tr":"ne tür bir"},{"de":"ein-","tr":"biri/bir tanesi"}]},{"id":"fragewoerter","title":"Fragewörter","words":[{"de":"wann","tr":"ne zaman"},{"de":"warum","tr":"neden"},{"de":"was","tr":"ne"},{"de":"wer","tr":"kim"},{"de":"wie","tr":"nasıl"},{"de":"wie viel","tr":"ne kadar"},{"de":"wo","tr":"nerede"},{"de":"woher","tr":"nereden"},{"de":"wohin","tr":"nereye"}]},{"id":"praepositionen","title":"Präpositionen","words":[{"de":"ab","tr":"-den itibaren"},{"de":"an","tr":"-de / bitişik"},{"de":"auf","tr":"üstünde"},{"de":"aus","tr":"içinden / -den"},{"de":"bei","tr":"yanında"},{"de":"bis","tr":"-e kadar"},{"de":"durch","tr":"içinden / boyunca"},{"de":"für","tr":"için"},{"de":"gegen","tr":"-e karşı"},{"de":"in","tr":"içinde"},{"de":"mit","tr":"ile"},{"de":"nach","tr":"-e doğru / sonra"},{"de":"ohne","tr":"-sız/-siz"},{"de":"seit","tr":"-den beri"},{"de":"über","tr":"üzerinde / hakkında"},{"de":"um","tr":"etrafında / saat ...-de"},{"de":"unter","tr":"altında"},{"de":"von","tr":"-den / -in"},{"de":"vor","tr":"önünde / önce"},{"de":"zu","tr":"-e (doğru)"},{"de":"zwischen","tr":"arasında"}]},{"id":"partikeln","title":"Kleine Wörter & Partikeln","words":[{"de":"aber","tr":"ama"},{"de":"also","tr":"yani / o halde"},{"de":"auch","tr":"de/da (ben de)"},{"de":"bisschen","tr":"biraz"},{"de":"circa","tr":"yaklaşık"},{"de":"da","tr":"orada / işte"},{"de":"daneben","tr":"yanında/bitişiğinde"},{"de":"denn","tr":"çünkü"},{"de":"einmal","tr":"bir kez"},{"de":"gerade","tr":"şu anda / tam"},{"de":"gern","tr":"severek/memnuniyetle"},{"de":"lieber","tr":"tercihen"},{"de":"mehr","tr":"daha fazla"},{"de":"wenig","tr":"az"},{"de":"meist-","tr":"çoğu"},{"de":"besser","tr":"daha iyi"},{"de":"best-","tr":"en iyi"},{"de":"letzt-","tr":"son(uncu)"},{"de":"nächst-","tr":"gelecek / bir sonraki"},{"de":"früher","tr":"eskiden"},{"de":"nicht","tr":"değil"},{"de":"nichts","tr":"hiçbir şey"},{"de":"nur","tr":"sadece"},{"de":"oder","tr":"veya"},{"de":"sehr","tr":"çok"},{"de":"so","tr":"böyle / öyle"},{"de":"sofort","tr":"hemen"},{"de":"und","tr":"ve"},{"de":"weiter","tr":"devam / daha ileri"},{"de":"zurück","tr":"geri"},{"de":"zusammen","tr":"birlikte"},{"de":"zurzeit","tr":"şu sıralar"},{"de":"allein","tr":"yalnız"},{"de":"hinten","tr":"arkada"},{"de":"draußen","tr":"dışarıda"},{"de":"eilig","tr":"acele"},{"de":"klar","tr":"tabii / net"},{"de":"wunderbar","tr":"harika"}]},{"id":"amt","title":"Formular, Amt & Prüfung","words":[{"de":"das Formular","tr":"form","article":"das"},{"de":"die Anmeldung","tr":"kayıt","article":"die"},{"de":"sich anmelden","tr":"kayıt olmak"},{"de":"die Anrede","tr":"hitap","article":"die"},{"de":"ankreuzen","tr":"(çarpıyla) işaretlemek"},{"de":"anklicken","tr":"tıklamak"},{"de":"der Ausweis","tr":"kimlik","article":"der"},{"de":"die Aussage","tr":"ifade","article":"die"},{"de":"das Ergebnis","tr":"sonuç","article":"das"},{"de":"der Name","tr":"isim","article":"der"},{"de":"der Vorname","tr":"ad","article":"der"},{"de":"der Familienname","tr":"soyadı","article":"der"},{"de":"der Familienstand","tr":"medeni durum","article":"der"},{"de":"geboren","tr":"doğmuş"},{"de":"der Geburtsort","tr":"doğum yeri","article":"der"},{"de":"das Geburtsjahr","tr":"doğum yılı","article":"das"},{"de":"das Alter","tr":"yaş","article":"das"},{"de":"männlich","tr":"erkek (cinsiyet)"},{"de":"weiblich","tr":"kadın (cinsiyet)"},{"de":"die Papiere","tr":"evraklar"},{"de":"die Postleitzahl","tr":"posta kodu","article":"die"},{"de":"die Vorwahl","tr":"alan kodu","article":"die"},{"de":"die Ordnung","tr":"düzen (in Ordnung: tamam)","article":"die"},{"de":"gültig","tr":"geçerli"},{"de":"die Lösung","tr":"çözüm","article":"die"},{"de":"der Bogen","tr":"cevap kağıdı","article":"der"},{"de":"der Buchstabe","tr":"harf","article":"der"},{"de":"der Text","tr":"metin","article":"der"},{"de":"das Thema","tr":"konu","article":"das"},{"de":"der Teil","tr":"bölüm/kısım","article":"der"},{"de":"die Anzeige","tr":"ilan","article":"die"},{"de":"der Prospekt","tr":"broşür","article":"der"},{"de":"das Gespräch","tr":"görüşme","article":"das"},{"de":"die Gruppe","tr":"grup","article":"die"},{"de":"das Praktikum","tr":"staj","article":"das"},{"de":"das Studium","tr":"üniversite eğitimi","article":"das"},{"de":"die Stelle","tr":"iş pozisyonu","article":"die"},{"de":"der Arbeitsplatz","tr":"iş yeri","article":"der"},{"de":"der Job","tr":"iş (geçici)","article":"der"},{"de":"selbstständig","tr":"serbest çalışan"},{"de":"verdienen","tr":"(para) kazanmak"},{"de":"der Verein","tr":"dernek/kulüp","article":"der"}]},{"id":"bankpost","title":"Bank, Post & Telefon","words":[{"de":"das Konto","tr":"banka hesabı","article":"das"},{"de":"überweisen","tr":"havale etmek"},{"de":"bar","tr":"nakit"},{"de":"die Kasse","tr":"kasa","article":"die"},{"de":"die Karte","tr":"kart","article":"die"},{"de":"die Kreditkarte","tr":"kredi kartı","article":"die"},{"de":"zahlen","tr":"ödemek"},{"de":"die Briefmarke","tr":"pul","article":"die"},{"de":"der Absender","tr":"gönderen","article":"der"},{"de":"der Empfänger","tr":"alıcı","article":"der"},{"de":"das Fax","tr":"faks","article":"das"},{"de":"der Anruf","tr":"telefon araması","article":"der"},{"de":"der Anrufbeantworter","tr":"telesekreter","article":"der"},{"de":"telefonieren","tr":"telefonla görüşmek"},{"de":"die Auskunft","tr":"danışma / bilgi","article":"die"},{"de":"der Schalter","tr":"gişe","article":"der"},{"de":"der Automat","tr":"otomat","article":"der"},{"de":"automatisch","tr":"otomatik"}]},{"id":"hotel","title":"Hotel & Unterwegs","words":[{"de":"das Doppelzimmer","tr":"çift kişilik oda","article":"das"},{"de":"das Einzelzimmer","tr":"tek kişilik oda","article":"das"},{"de":"die Halbpension","tr":"yarım pansiyon","article":"die"},{"de":"die Rezeption","tr":"resepsiyon","article":"die"},{"de":"übernachten","tr":"gecelemek"},{"de":"das Gepäck","tr":"bagaj","article":"das"},{"de":"der Ausflug","tr":"gezi","article":"der"},{"de":"die Führung","tr":"rehberli tur","article":"die"},{"de":"die Sehenswürdigkeit","tr":"gezilecek yer","article":"die"},{"de":"das Reisebüro","tr":"seyahat acentesi","article":"das"},{"de":"der Reiseführer","tr":"rehber (kitap/kişi)","article":"der"},{"de":"die Autobahn","tr":"otoyol","article":"die"},{"de":"der Bahnsteig","tr":"peron","article":"der"},{"de":"das Gleis","tr":"peron/ray","article":"das"},{"de":"die S-Bahn","tr":"banliyö treni","article":"die"},{"de":"der Lkw","tr":"kamyon","article":"der"},{"de":"Rad fahren","tr":"bisiklete binmek"},{"de":"abfliegen","tr":"(uçak) kalkmak"},{"de":"der Abflug","tr":"kalkış (uçuş)","article":"der"},{"de":"der Anschluss","tr":"aktarma bağlantısı","article":"der"},{"de":"die Durchsage","tr":"anons","article":"die"},{"de":"die Ansage","tr":"duyuru","article":"die"},{"de":"der Fahrer","tr":"sürücü","article":"der"},{"de":"der Zoll","tr":"gümrük","article":"der"},{"de":"der Plan","tr":"plan / harita","article":"der"},{"de":"die Halle","tr":"salon / hol","article":"die"},{"de":"der Raum","tr":"oda / mekan","article":"der"},{"de":"halten","tr":"durmak"},{"de":"der Eintritt","tr":"giriş ücreti","article":"der"},{"de":"besichtigen","tr":"(bir yeri) gezmek"}]},{"id":"haushalt","title":"Haushalt & Technik","words":[{"de":"anmachen","tr":"açmak (cihaz/ışık)"},{"de":"ausmachen","tr":"kapatmak (cihaz/ışık)"},{"de":"an sein","tr":"açık olmak (cihaz)"},{"de":"aus sein","tr":"kapalı olmak (cihaz)"},{"de":"auf sein","tr":"açık olmak (kapı)"},{"de":"zu sein","tr":"kapalı olmak (kapı)"},{"de":"weg sein","tr":"gitmiş olmak"},{"de":"das Licht","tr":"ışık","article":"das"},{"de":"der Herd","tr":"ocak","article":"der"},{"de":"der Kühlschrank","tr":"buzdolabı","article":"der"},{"de":"die Maschine","tr":"makine","article":"die"},{"de":"das Öl","tr":"yağ","article":"das"},{"de":"das Feuer","tr":"ateş","article":"das"},{"de":"kaputt","tr":"bozuk"},{"de":"reparieren","tr":"tamir etmek"},{"de":"die Reparatur","tr":"tamir","article":"die"},{"de":"der Drucker","tr":"yazıcı","article":"der"},{"de":"drucken","tr":"yazdırmak"},{"de":"drücken","tr":"basmak (düğme)"},{"de":"die CD","tr":"CD","article":"die"},{"de":"das Lied","tr":"şarkı","article":"das"},{"de":"das Bild","tr":"resim","article":"das"},{"de":"der Bleistift","tr":"kurşun kalem","article":"der"},{"de":"der Kugelschreiber","tr":"tükenmez kalem","article":"der"},{"de":"die Möbel","tr":"mobilya"},{"de":"das Apartment","tr":"apart daire","article":"das"},{"de":"der Stock","tr":"kat","article":"der"},{"de":"die Ecke","tr":"köşe","article":"die"},{"de":"der Eingang","tr":"giriş","article":"der"},{"de":"der Ausgang","tr":"çıkış","article":"der"},{"de":"die Mitte","tr":"orta","article":"die"},{"de":"der Blick","tr":"manzara / bakış","article":"der"},{"de":"benutzen","tr":"kullanmak"},{"de":"breit","tr":"geniş"},{"de":"hoch","tr":"yüksek"}]},{"id":"menschen","title":"Menschen & Beziehungen","words":[{"de":"der Mensch","tr":"insan","article":"der"},{"de":"der Herr","tr":"bay","article":"der"},{"de":"die Dame","tr":"bayan","article":"die"},{"de":"der Beamte","tr":"memur","article":"der"},{"de":"bekannt","tr":"tanınmış"},{"de":"der Bekannte","tr":"tanıdık","article":"der"},{"de":"der Erwachsene","tr":"yetişkin","article":"der"},{"de":"der Jugendliche","tr":"genç","article":"der"},{"de":"der Partner","tr":"partner / eş","article":"der"},{"de":"der Gast","tr":"misafir","article":"der"},{"de":"der Verwandte","tr":"akraba","article":"der"},{"de":"die Großeltern","tr":"büyükanne ve büyükbaba"},{"de":"die Ehefrau","tr":"eş (kadın)","article":"die"},{"de":"der Ehemann","tr":"eş (erkek)","article":"der"},{"de":"die Hausfrau","tr":"ev hanımı","article":"die"},{"de":"der Hausmann","tr":"ev işlerine bakan erkek","article":"der"},{"de":"heiraten","tr":"evlenmek"},{"de":"die Hochzeit","tr":"düğün","article":"die"},{"de":"gestorben","tr":"ölmüş"},{"de":"tot","tr":"ölü"},{"de":"kennenlernen","tr":"tanışmak"},{"de":"sich kümmern","tr":"ilgilenmek"},{"de":"die Heimat","tr":"memleket","article":"die"},{"de":"international","tr":"uluslararası"},{"de":"der Doktor","tr":"doktor","article":"der"},{"de":"die Welt","tr":"dünya","article":"die"},{"de":"das Leben","tr":"hayat","article":"das"},{"de":"böse","tr":"kızgın / kötü"},{"de":"lustig","tr":"komik / neşeli"},{"de":"fremd","tr":"yabancı (buralı değil)"}]}];
+
+// =============== GRAMMAR (tam A1 müfredatı) ===============
+const grammarTopics = [
+{ id:"wortstellung", tag:"Satzbau", title:"Kelime Sırası: Fiil Hep 2. Pozisyonda",
+p:"Almanca düz cümlenin altın kuralı: çekimli fiil her zaman ikinci pozisyondadır. Cümle özneyle de başlasa, zaman ifadesiyle de başlasa fiil yerinden oynamaz — özne gerekirse fiilin arkasına geçer (inversiyon).",
+examples:[["Ich gehe heute ins Kino.","Bugün sinemaya gidiyorum."],["Heute gehe ich ins Kino.","Bugün sinemaya gidiyorum. (Zaman öne geldi, fiil hâlâ 2. sırada, özne fiilin arkasına geçti)"],["Am Montag arbeite ich nicht.","Pazartesi çalışmıyorum."]],
+quiz:[
+ {q:"Hangi cümle doğru?",o:["Heute ich gehe ins Kino.","Heute gehe ich ins Kino.","Heute ins Kino ich gehe.","Ich heute gehe ins Kino."],a:1},
+ {q:"'Morgen ___ wir Fußball.' Boşluğa ne gelir?",o:["wir spielen","spielen","spielt","spiele"],a:1},
+ {q:"Almanca düz cümlede çekimli fiil hangi pozisyondadır?",o:["Her zaman 1.","Her zaman 2.","Her zaman sonda","Serbest"],a:1}
+]},
+{ id:"artikel", tag:"Nomen", title:"Artikel: der, die, das / ein, eine",
+p:"Her ismin bir cinsiyeti vardır: der (eril), die (dişil), das (nötr). Belirsiz artikel: ein (der ve das için), eine (die için). Çoğulda belirli artikel her zaman die olur; belirsiz artikelin çoğulu yoktur. İpuçları: -ung, -heit, -keit, -ion ile bitenler die; -chen, -lein ile bitenler das olur.",
+examples:[["der Tisch → ein Tisch","masa"],["die Zeitung → eine Zeitung","gazete (-ung → die)"],["das Mädchen → ein Mädchen","kız çocuk (-chen → das)"],["die Bücher (Plural)","kitaplar — çoğulda hep die"]],
+quiz:[
+ {q:"'Wohnung' kelimesinin artikeli nedir?",o:["der","die","das","den"],a:1},
+ {q:"'___ Mädchen ist klein.' Boşluğa ne gelir?",o:["Der","Die","Das","Den"],a:2},
+ {q:"Çoğul isimlerin belirli artikeli her zaman nedir?",o:["der","die","das","ein"],a:1},
+ {q:"'Buch' (das) için belirsiz artikel hangisidir?",o:["eine","ein","einen","einem"],a:1}
+]},
+{ id:"plural", tag:"Nomen", title:"Çoğul (Plural)",
+p:"Almancada çoğul yapmanın tek bir kuralı yok; en yaygın ekler: -e (der Tisch → die Tische), -en/-n (die Frau → die Frauen), -er (das Kind → die Kinder, çoğu zaman Umlaut ile), -s (das Auto → die Autos, yabancı kelimeler) ve eksiz (der Lehrer → die Lehrer). Her kelimeyi çoğuluyla birlikte ezberlemek en sağlıklısı.",
+examples:[["der Tisch → die Tische","masa → masalar"],["die Frau → die Frauen","kadın → kadınlar"],["das Kind → die Kinder","çocuk → çocuklar"],["das Auto → die Autos","araba → arabalar"],["der Apfel → die Äpfel","elma → elmalar (Umlaut)"]],
+quiz:[
+ {q:"'das Kind' kelimesinin çoğulu nedir?",o:["die Kinds","die Kinder","die Kinden","die Kinde"],a:1},
+ {q:"'das Auto' kelimesinin çoğulu nedir?",o:["die Auten","die Autos","die Autoen","die Autor"],a:1},
+ {q:"'die Frau' kelimesinin çoğulu nedir?",o:["die Fraus","die Frauen","die Fräue","die Frauer"],a:1}
+]},
+{ id:"praesens", tag:"Verb", title:"Şimdiki Zaman: Düzenli Fiil Çekimi",
+p:"Fiil kökü + kişi eki: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie/Sie -en. Kök -t veya -d ile bitiyorsa (arbeiten, finden) du/er/ihr formlarına -e- eklenir: du arbeitest, er arbeitet.",
+table:{h:["Kişi","lernen","arbeiten"],r:[["ich","lerne","arbeite"],["du","lernst","arbeitest"],["er/sie/es","lernt","arbeitet"],["wir","lernen","arbeiten"],["ihr","lernt","arbeitet"],["sie/Sie","lernen","arbeiten"]]},
+examples:[["Ich lerne Deutsch.","Almanca öğreniyorum."],["Du arbeitest viel.","Çok çalışıyorsun."]],
+quiz:[
+ {q:"'du' için 'lernen' fiilinin doğru çekimi?",o:["lernt","lerne","lernst","lernen"],a:2},
+ {q:"'er ___ bei Siemens.' (arbeiten)",o:["arbeitest","arbeitet","arbeiten","arbeite"],a:1},
+ {q:"'wir' için fiil eki nedir?",o:["-t","-st","-e","-en"],a:3}
+]},
+{ id:"seinhaben", tag:"Verb", title:"sein ve haben",
+p:"En önemli iki fiil, ikisi de düzensizdir. sein = olmak, haben = sahip olmak. Perfekt kurulumunda da yardımcı fiil olarak kullanılırlar, bu yüzden ezbere bilinmeleri şart.",
+table:{h:["Kişi","sein","haben"],r:[["ich","bin","habe"],["du","bist","hast"],["er/sie/es","ist","hat"],["wir","sind","haben"],["ihr","seid","habt"],["sie/Sie","sind","haben"]]},
+examples:[["Ich bin müde.","Yorgunum."],["Hast du Zeit?","Vaktin var mı?"],["Wir sind aus der Türkei.","Türkiye'denyiz."]],
+quiz:[
+ {q:"'ihr' için 'sein' fiilinin doğru formu?",o:["sind","seid","sein","bist"],a:1},
+ {q:"'___ du einen Bruder?' (haben)",o:["Habt","Haben","Hast","Hat"],a:2},
+ {q:"'Er ___ Lehrer.'",o:["bin","bist","ist","sind"],a:2}
+]},
+{ id:"unregelmaessig", tag:"Verb", title:"Düzensiz Fiiller: Ünlü Değişimi",
+p:"Bazı güçlü fiillerde du ve er/sie/es formlarında kök ünlüsü değişir: e → i (sprechen → du sprichst), e → ie (sehen → du siehst), a → ä (fahren → du fährst). Diğer kişilerde değişiklik olmaz.",
+examples:[["sprechen: ich spreche, du sprichst, er spricht","konuşmak (e→i)"],["sehen: ich sehe, du siehst, er sieht","görmek (e→ie)"],["fahren: ich fahre, du fährst, er fährt","gitmek (a→ä)"],["essen: ich esse, du isst, er isst","yemek (e→i)"],["schlafen: ich schlafe, du schläfst, er schläft","uyumak (a→ä)"]],
+quiz:[
+ {q:"'du' için 'sprechen' fiilinin doğru formu?",o:["sprechst","sprichst","spricht","sprecht"],a:1},
+ {q:"'Er ___ nach Berlin.' (fahren)",o:["fahrt","fährt","fahre","fährst"],a:1},
+ {q:"Ünlü değişimi hangi kişilerde olur?",o:["ich ve wir","du ve er/sie/es","ihr ve sie","tüm kişilerde"],a:1}
+]},
+{ id:"akkusativ", tag:"Fall", title:"Nominativ – Akkusativ",
+p:"Nominativ öznedir (kim/ne yapıyor), Akkusativ doğrudan nesnedir (kimi/neyi). Sadece eril değişir: der → den, ein → einen, kein → keinen, mein → meinen. Dişil, nötr ve çoğul aynı kalır. Sık Akkusativ fiilleri: haben, brauchen, kaufen, sehen, suchen, es gibt.",
+table:{h:["","Eril","Dişil","Nötr","Çoğul"],r:[["Nominativ","der / ein","die / eine","das / ein","die"],["Akkusativ","den / einen","die / eine","das / ein","die"]]},
+examples:[["Der Mann sieht den Hund.","Adam köpeği görüyor."],["Ich habe einen Bruder.","Bir erkek kardeşim var."],["Es gibt einen Park hier.","Burada bir park var."]],
+quiz:[
+ {q:"'Ich sehe ___ Mann.' (der Mann)",o:["der","dem","den","des"],a:2},
+ {q:"'Sie kauft ___ Lampe.' (die Lampe)",o:["einen","eine","einem","einer"],a:1},
+ {q:"Akkusativ'de hangi cinsiyet değişir?",o:["Sadece dişil","Sadece eril","Sadece nötr","Hepsi"],a:1},
+ {q:"'Wir brauchen ___ Auto.' (das Auto)",o:["einen","eine","ein","einem"],a:2}
+]},
+{ id:"dativ", tag:"Fall", title:"Dativ'e Giriş (Edatlarla)",
+p:"A1'de Dativ en çok sabit edatlarla görülür: mit, bei, von, zu, aus, nach, seit her zaman Dativ alır. Dativ'de artikeller: der/das → dem, die → der, çoğul → den (+n). Kısaltmalar: zu dem = zum, zu der = zur, bei dem = beim.",
+table:{h:["","Eril","Dişil","Nötr","Çoğul"],r:[["Dativ","dem / einem","der / einer","dem / einem","den (+n)"]]},
+examples:[["Ich fahre mit dem Bus.","Otobüsle gidiyorum."],["Sie wohnt bei der Familie.","Ailenin yanında kalıyor."],["Wir gehen zum Arzt.","Doktora gidiyoruz. (zu dem = zum)"],["Er kommt aus der Türkei.","Türkiye'den geliyor."]],
+quiz:[
+ {q:"'Ich fahre mit ___ Zug.' (der Zug)",o:["den","dem","der","das"],a:1},
+ {q:"Hangi edat her zaman Dativ alır?",o:["für","ohne","mit","um"],a:2},
+ {q:"'zu dem' kısaltması nedir?",o:["zur","zum","zus","zudem"],a:1}
+]},
+{ id:"pronomen", tag:"Pronomen", title:"Kişi Zamirleri (Nominativ + Akkusativ)",
+p:"Nominativ: ich, du, er, sie, es, wir, ihr, sie/Sie. Akkusativ halleri: mich, dich, ihn, sie, es, uns, euch, sie/Sie. Kibar hitap Sie her zaman büyük yazılır.",
+table:{h:["Nominativ","Akkusativ","Türkçe"],r:[["ich","mich","ben/beni"],["du","dich","sen/seni"],["er","ihn","o/onu (eril)"],["sie","sie","o/onu (dişil)"],["es","es","o/onu (nötr)"],["wir","uns","biz/bizi"],["ihr","euch","siz/sizi"],["sie/Sie","sie/Sie","onlar/Siz (kibar)"]]},
+examples:[["Ich sehe dich.","Seni görüyorum."],["Kennst du ihn?","Onu tanıyor musun?"],["Sie besucht uns morgen.","Bizi yarın ziyaret edecek."]],
+quiz:[
+ {q:"'er' zamirinin Akkusativ hali nedir?",o:["ihm","ihn","er","es"],a:1},
+ {q:"'Ich liebe ___.' (sen)",o:["du","dir","dich","dein"],a:2},
+ {q:"'wir' zamirinin Akkusativ hali nedir?",o:["euch","uns","wir","ihnen"],a:1}
+]},
+{ id:"possessiv", tag:"Pronomen", title:"İyelik Zamirleri (Possessivartikel)",
+p:"mein (benim), dein (senin), sein (onun-eril/nötr), ihr (onun-dişil), unser (bizim), euer (sizin), ihr/Ihr (onların/Sizin). Sondaki ek, sahip olunan ismin cinsiyetine göre ein gibi çekilir: mein Bruder, meine Schwester, mein Kind, meine Eltern.",
+examples:[["Das ist mein Vater und das ist meine Mutter.","Bu babam, bu da annem."],["Ihr Auto ist neu.","Onun (kadın) arabası yeni."],["Wo ist euer Haus?","Sizin eviniz nerede?"],["Ich sehe meinen Bruder.","Erkek kardeşimi görüyorum. (Akkusativ eril → -en)"]],
+quiz:[
+ {q:"'onun (kadın) kitabı' nasıl denir?",o:["sein Buch","ihr Buch","dein Buch","euer Buch"],a:1},
+ {q:"'___ Schwester heißt Anna.' (benim)",o:["Mein","Meine","Meinen","Meiner"],a:1},
+ {q:"'Ich besuche ___ Onkel.' (benim, Akkusativ)",o:["mein","meine","meinen","meinem"],a:2}
+]},
+{ id:"negation", tag:"Satzbau", title:"Olumsuzluk: nicht ve kein",
+p:"kein → belirsiz artikelli veya artikelsiz isimleri olumsuzlar ve ein gibi çekilir (kein, keine, keinen...). nicht → fiil, sıfat, zarf ve belirli artikelli isimleri olumsuzlar; genellikle cümlenin sonuna ya da olumsuzladığı öğenin önüne gelir.",
+examples:[["Ich habe kein Auto.","Arabam yok."],["Sie hat keine Zeit.","Vakti yok."],["Das ist nicht mein Buch.","Bu benim kitabım değil."],["Ich arbeite heute nicht.","Bugün çalışmıyorum."]],
+quiz:[
+ {q:"'Ich habe ___ Geld.' (para yok)",o:["nicht","kein","keine","nichts"],a:1},
+ {q:"'Er kommt heute ___.' (gelmiyor)",o:["kein","keine","nicht","nein"],a:2},
+ {q:"'Sie hat ___ Schwester.' (kız kardeşi yok — die Schwester)",o:["kein","keinen","keine","nicht"],a:2}
+]},
+{ id:"fragen", tag:"Satzbau", title:"Soru Cümleleri: W-Fragen & Ja/Nein",
+p:"W-Fragen soru kelimesiyle başlar, fiil ikinci sırada: wer (kim), was (ne), wo (nerede), woher (nereden), wohin (nereye), wann (ne zaman), wie (nasıl), warum (neden), wie viel (ne kadar), welche (hangi). Evet/hayır sorularında fiil başa gelir. Olumsuz soruya olumlu cevap doch ile verilir.",
+examples:[["Wo wohnst du? — In Berlin.","Nerede oturuyorsun? — Berlin'de."],["Woher kommen Sie?","Nereden geliyorsunuz?"],["Sprichst du Deutsch? — Ja.","Almanca konuşuyor musun? — Evet."],["Hast du kein Auto? — Doch!","Araban yok mu? — Var tabii!"]],
+quiz:[
+ {q:"'___ kommst du?' — 'Aus der Türkei.'",o:["Wohin","Wo","Woher","Wann"],a:2},
+ {q:"Evet/hayır sorusunda fiil nerededir?",o:["2. pozisyonda","Sonda","1. pozisyonda","Fark etmez"],a:2},
+ {q:"'Hast du keine Zeit?' sorusuna 'aslında var' cevabı?",o:["Ja","Nein","Doch","Nicht"],a:2},
+ {q:"'___ kostet das?' (fiyat sorma)",o:["Wie viel","Wo","Wer","Welche"],a:0}
+]},
+{ id:"modal", tag:"Verb", title:"Modalverben: können, müssen, wollen, dürfen, sollen, möchten",
+p:"Kip fiili 2. pozisyonda çekilir, asıl fiil mastar halinde sona gider. können (-ebilmek), müssen (zorunda olmak), wollen (istemek), dürfen (izinli olmak), sollen (-meli), möchten (kibarca istemek). ich ve er/sie/es formları aynıdır ve ek almaz: ich kann, er kann.",
+table:{h:["Kişi","können","müssen","möchten"],r:[["ich","kann","muss","möchte"],["du","kannst","musst","möchtest"],["er/sie/es","kann","muss","möchte"],["wir","können","müssen","möchten"]]},
+examples:[["Ich kann gut schwimmen.","İyi yüzebilirim."],["Du musst jetzt gehen.","Şimdi gitmen gerek."],["Ich möchte einen Kaffee trinken.","Bir kahve içmek istiyorum."],["Hier darf man nicht rauchen.","Burada sigara içmek yasak."]],
+quiz:[
+ {q:"'Ich ___ Deutsch sprechen.' (yapabilmek)",o:["kann","kannst","können","könnt"],a:0},
+ {q:"Kip fiili varken asıl fiil nerede durur?",o:["2. pozisyonda","Başta","Cümle sonunda, mastar halinde","Kip fiilinin hemen yanında"],a:2},
+ {q:"'Er ___ heute arbeiten.' (zorunda)",o:["musst","müssen","muss","müsst"],a:2},
+ {q:"Kibarca bir şey istemek için hangisi kullanılır?",o:["wollen","möchten","sollen","dürfen"],a:1}
+]},
+{ id:"trennbar", tag:"Verb", title:"Ayrılabilir Fiiller (Trennbare Verben)",
+p:"auf-, ein-, an-, ab-, mit-, zu-, aus- gibi vurgulu önekler düz cümlede fiilden ayrılıp sona gider: aufstehen → Ich stehe auf. Kip fiiliyle kullanılınca mastar bütün kalır: Ich muss früh aufstehen. Sık örnekler: aufstehen, einkaufen, anrufen, fernsehen, mitkommen, einsteigen, aussteigen.",
+examples:[["Ich stehe um 7 Uhr auf.","Saat 7'de kalkıyorum."],["Rufst du mich morgen an?","Yarın beni arar mısın?"],["Wir kaufen im Supermarkt ein.","Süpermarkette alışveriş yapıyoruz."],["Ich muss früh aufstehen.","Erken kalkmam gerek. (kip fiiliyle birleşik)"]],
+quiz:[
+ {q:"'anrufen' fiiliyle: 'Ich ___ dich ___.'",o:["anrufe / —","rufe / an","rufe an / —","an / rufe"],a:1},
+ {q:"'Er ___ jeden Tag ___.' (fernsehen)",o:["fernsieht / —","sieht / fern","fern / sieht","sehen / fern"],a:1},
+ {q:"Kip fiiliyle ayrılabilir fiil nasıl kullanılır?",o:["Yine ayrılır","Bütün kalır, sonda mastar olur","Önek başa gelir","Kullanılamaz"],a:1}
+]},
+{ id:"imperativ", tag:"Satzbau", title:"Emir Kipi (Imperativ)",
+p:"Üç form: du için fiil kökü (Komm!), ihr için -t'li form (Kommt!), Sie için mastar + Sie (Kommen Sie!). bitte eklemek kibarlaştırır. sein düzensizdir: Sei ruhig! / Seien Sie ruhig!",
+examples:[["Komm bitte her!","Lütfen buraya gel! (du)"],["Öffnet die Bücher!","Kitapları açın! (ihr)"],["Nehmen Sie Platz, bitte.","Buyurun oturun. (Sie)"],["Sei bitte leise!","Lütfen sessiz ol!"]],
+quiz:[
+ {q:"'gehen' fiilinin du için emir hali?",o:["Gehst!","Geh!","Gehen!","Gehe du!"],a:1},
+ {q:"Kibar (Sie) emir formu nasıl kurulur?",o:["Kök + Sie","Mastar + Sie","-t + Sie","Sie + kök"],a:1},
+ {q:"'kommen' fiilinin ihr için emir hali?",o:["Komm!","Kommen!","Kommt!","Kommst!"],a:2}
+]},
+{ id:"praepositionen", tag:"Satzbau", title:"Edatlar: Yer ve Zaman",
+p:"Zaman: um (saat: um 8 Uhr), am (gün/gün bölümü: am Montag, am Abend), im (ay/mevsim: im Juli, im Winter), von...bis (–den –e kadar), seit (–den beri). Yer: in (içinde), auf (üstünde), an (bitişik/kenar), bei (yanında), zu (birine/bir yere doğru), nach (şehir/ülkeye doğru), aus (–den).",
+examples:[["Der Kurs beginnt um 9 Uhr.","Kurs saat 9'da başlıyor."],["Am Sonntag schlafe ich lange.","Pazar günü geç saate kadar uyurum."],["Im August fahren wir in die Türkei.","Ağustosta Türkiye'ye gidiyoruz."],["Ich wohne in Berlin und komme aus Izmir.","Berlin'de yaşıyorum, İzmirliyim."]],
+quiz:[
+ {q:"'___ Montag habe ich einen Termin.'",o:["Um","Im","Am","In"],a:2},
+ {q:"'Der Film beginnt ___ 20 Uhr.'",o:["am","um","im","auf"],a:1},
+ {q:"'___ Winter ist es kalt.'",o:["Am","Um","Im","An"],a:2},
+ {q:"'Ich fahre ___ Berlin.' (şehre doğru)",o:["nach","zu","in","aus"],a:0}
+]},
+{ id:"konnektoren", tag:"Satzbau", title:"Bağlaçlar: und, oder, aber, denn",
+p:"Bu dört bağlaç 'pozisyon sıfır'dadır — kelime sırasını değiştirmez, fiil yine 2. pozisyonda kalır. und (ve), oder (veya), aber (ama), denn (çünkü).",
+examples:[["Ich trinke Kaffee und er trinkt Tee.","Ben kahve içiyorum ve o çay içiyor."],["Kommst du mit oder bleibst du hier?","Geliyor musun yoksa burada mı kalıyorsun?"],["Ich bin müde, aber ich arbeite noch.","Yorgunum ama hâlâ çalışıyorum."],["Ich bleibe zu Hause, denn ich bin krank.","Evde kalıyorum çünkü hastayım."]],
+quiz:[
+ {q:"'çünkü' anlamındaki bağlaç hangisi?",o:["aber","oder","denn","und"],a:2},
+ {q:"Bu bağlaçlar kelime sırasını nasıl etkiler?",o:["Fiili sona atar","Fiili başa alır","Değiştirmez","Özneyi düşürür"],a:2},
+ {q:"'Ich möchte kommen, ___ ich habe keine Zeit.'",o:["und","aber","oder","denn"],a:1}
+]},
+{ id:"perfekt", tag:"Zaman", title:"Geçmiş Zaman: Perfekt",
+p:"Konuşma dilinin geçmiş zamanı: haben/sein (2. pozisyon) + Partizip II (cümle sonu). Düzenli fiiller: ge- + kök + -t (machen → gemacht). Düzensizler: ge- + kök(değişebilir) + -en (sehen → gesehen). Hareket ve durum değişikliği fiilleri sein alır: gehen, fahren, kommen, fliegen, aufstehen. Ayrılabilir fiillerde ge- araya girer: eingekauft. -ieren fiilleri ge- almaz: telefoniert.",
+examples:[["Ich habe Deutsch gelernt.","Almanca öğrendim."],["Wir haben Pizza gegessen.","Pizza yedik."],["Er ist nach Hause gegangen.","Eve gitti. (hareket → sein)"],["Sie hat gestern eingekauft.","Dün alışveriş yaptı."],["Ich habe mit ihm telefoniert.","Onunla telefonda konuştum."]],
+quiz:[
+ {q:"'machen' fiilinin Partizip II hali?",o:["gemachen","gemacht","machte","gemact"],a:1},
+ {q:"'Ich ___ nach Berlin gefahren.'",o:["habe","bin","hat","ist"],a:1},
+ {q:"Hangi fiil Perfekt'te 'sein' alır?",o:["essen","lernen","kommen","kaufen"],a:2},
+ {q:"'telefonieren' fiilinin Partizip II hali?",o:["getelefoniert","telefoniert","getelefonieren","telefonierte"],a:1}
+]},
+{ id:"praeteritum", tag:"Zaman", title:"Präteritum: war ve hatte",
+p:"A1'de geçmiş zaman genelde Perfekt ile kurulur ama sein ve haben için Präteritum kullanılır: war (idi) ve hatte (vardı). Çekim: ich war/hatte, du warst/hattest, er war/hatte, wir waren/hatten, ihr wart/hattet, sie waren/hatten.",
+examples:[["Ich war gestern krank.","Dün hastaydım."],["Wo warst du?","Neredeydin?"],["Wir hatten keine Zeit.","Vaktimiz yoktu."],["Das Wetter war schön.","Hava güzeldi."]],
+quiz:[
+ {q:"'Ich ___ gestern zu Hause.'",o:["war","bin","hatte","wart"],a:0},
+ {q:"'Wir ___ viel Spaß.' (eğlendik)",o:["waren","hatten","war","hatte"],a:1},
+ {q:"'du' için 'sein' fiilinin Präteritum hali?",o:["warst","wart","war","warest"],a:0}
+]},
+{ id:"gern", tag:"Satzbau", title:"gern, es gibt ve Diğer Kalıplar",
+p:"gern fiille birlikte 'severek yapmak' anlamı verir: Ich schwimme gern (yüzmeyi severim). Karşılaştırma: lieber (tercihen), am liebsten (en çok). es gibt + Akkusativ 'var' demektir. Ayrıca gefallen (hoşuna gitmek) ve schmecken (tadı güzel olmak) Dativ ile kullanılır: Das gefällt mir.",
+examples:[["Ich trinke gern Tee.","Çay içmeyi severim."],["Ich trinke lieber Kaffee.","Kahveyi tercih ederim."],["Es gibt hier einen schönen Park.","Burada güzel bir park var."],["Das Essen schmeckt mir gut.","Yemeği beğendim."]],
+quiz:[
+ {q:"'Yüzmeyi severim' nasıl denir?",o:["Ich schwimme gern.","Ich gern schwimme.","Ich mag schwimmt.","Ich schwimmen gern."],a:0},
+ {q:"'es gibt' hangi hali alır?",o:["Nominativ","Dativ","Akkusativ","Genitiv"],a:2},
+ {q:"'tercihen / daha çok severek' hangisi?",o:["gern","lieber","am liebsten","mehr"],a:1}
+]}
+];
+
+// =============== STATE & STORAGE ===============
+let progress = { vocab:{}, grammar:{} };
+const hasClaudeStorage = typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function';
+async function loadProgress(){
+  try{
+    if(hasClaudeStorage){
+      const r = await window.storage.get('sprachpass-progress');
+      if(r&&r.value) progress = JSON.parse(r.value);
+    } else {
+      const v = localStorage.getItem('sprachpass-progress');
+      if(v) progress = JSON.parse(v);
+    }
+  }catch(e){}
+  render();
+}
+async function saveProgress(){
+  try{
+    if(hasClaudeStorage){ await window.storage.set('sprachpass-progress', JSON.stringify(progress)); }
+    else { localStorage.setItem('sprachpass-progress', JSON.stringify(progress)); }
+  }catch(e){ console.error(e); }
+}
+
+// =============== QUIZ ENGINE ===============
+const overlay = document.getElementById('quizOverlay');
+const quizBody = document.getElementById('quizBody');
+const quizTitle = document.getElementById('quizTitle');
+const quizProgressEl = document.getElementById('quizProgress');
+let quizState = null;
+document.getElementById('quizClose').onclick = ()=>{ overlay.classList.remove('show'); quizState=null; };
+
+function shuffle(a){ a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function startQuiz(title, questions, onPass){
+  quizState = { qs:shuffle(questions).slice(0, Math.min(questions.length,10)), i:0, score:0, onPass };
+  quizTitle.textContent = title;
+  overlay.classList.add('show');
+  showQuestion();
+}
+function showQuestion(){
+  const s = quizState; const q = s.qs[s.i];
+  quizProgressEl.textContent = `Soru ${s.i+1} / ${s.qs.length}`;
+  quizBody.innerHTML = `<p class="quiz-q">${q.q}</p><div class="quiz-opts"></div><button class="quiz-next" id="quizNext">Sonraki →</button>`;
+  const optsWrap = quizBody.querySelector('.quiz-opts');
+  q.o.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='quiz-opt'; b.textContent=opt;
+    b.onclick = ()=>{
+      if(quizBody.dataset.answered) return;
+      quizBody.dataset.answered='1';
+      if(idx===q.a){ b.classList.add('correct'); s.score++; }
+      else { b.classList.add('wrong'); optsWrap.children[q.a].classList.add('correct'); }
+      [...optsWrap.children].forEach(x=>x.disabled=true);
+      document.getElementById('quizNext').classList.add('show');
+    };
+    optsWrap.appendChild(b);
+  });
+  delete quizBody.dataset.answered;
+  document.getElementById('quizNext').onclick = ()=>{
+    s.i++;
+    if(s.i < s.qs.length) showQuestion(); else showResult();
+  };
+}
+function showResult(){
+  const s = quizState;
+  const pct = Math.round((s.score/s.qs.length)*100);
+  const pass = pct >= 75;
+  quizProgressEl.textContent = 'Test tamamlandı';
+  quizBody.innerHTML = `<div class="quiz-result">
+    <div class="score">${s.score} / ${s.qs.length}</div>
+    <p class="verdict ${pass?'pass':''}">${pass ? '✓ Geçtin! ('+pct+'%) — Damga basıldı.' : pct+'% — Geçmek için %75 gerekli. Konuyu tekrar edip yeniden dene!'}</p>
+    <button class="quiz-next show" id="quizFinish">${pass?'Harika, kapat':'Kapat'}</button>
+  </div>`;
+  document.getElementById('quizFinish').onclick = ()=>{
+    overlay.classList.remove('show');
+    if(pass && s.onPass) s.onPass();
+    quizState=null;
+  };
+}
+
+// Vocab quiz: kategori kelimelerinden dinamik çoktan seçmeli üret
+function makeVocabQuiz(cat){
+  const pool = shuffle(cat.words).slice(0, Math.min(10, cat.words.length));
+  return pool.map(w=>{
+    const wrong = shuffle(cat.words.filter(x=>x.tr!==w.tr)).slice(0,3).map(x=>x.tr);
+    const opts = shuffle([w.tr, ...wrong]);
+    return { q:`„${w.de}" ne demek?`, o:opts, a:opts.indexOf(w.tr) };
+  });
+}
+
+// =============== RENDER ===============
+function renderVocabOverview(){
+  const grid = document.getElementById('vocabOverview');
+  grid.innerHTML='';
+  let totalWords = 0;
+  vocabCategories.forEach(cat=>{
+    totalWords += cat.words.length;
+    const done = !!progress.vocab[cat.id];
+    const card = document.createElement('div');
+    card.className='cat-card'+(done?' done':'');
+    card.innerHTML=`<div class="stamp">${STAMP_SVG}</div><p class="cat-title">${cat.title}</p><p class="cat-count">${cat.words.length} kelime</p>`;
+    card.onclick=()=>openCategory(cat.id);
+    grid.appendChild(card);
+  });
+  document.getElementById('metaVocabTotal').textContent = totalWords;
+}
+
+function openCategory(catId){
+  const cat = vocabCategories.find(c=>c.id===catId);
+  document.getElementById('vocabOverview').style.display='none';
+  const detail = document.getElementById('vocabDetail');
+  detail.style.display='block';
+  const done = !!progress.vocab[cat.id];
+  detail.innerHTML=`
+    <button class="back-btn">← Kategorilere dön</button>
+    <div class="cat-header">
+      <h2>${cat.title}</h2>
+      <div class="header-btns">
+        <button class="quiz-btn" id="vocabQuizBtn">Teste Gir</button>
+        <button class="mark-btn ${done?'done':''}" id="markVocabBtn">${done?'✓ Tamamlandı':'Manuel işaretle'}</button>
+      </div>
+    </div>
+    <div class="cards" id="cardsWrap"></div>`;
+  detail.querySelector('.back-btn').onclick=()=>{detail.style.display='none'; document.getElementById('vocabOverview').style.display='grid';};
+  detail.querySelector('#markVocabBtn').onclick=()=>{
+    progress.vocab[cat.id]=!progress.vocab[cat.id]; saveProgress(); render(); openCategory(catId);
+  };
+  detail.querySelector('#vocabQuizBtn').onclick=()=>{
+    startQuiz(cat.title+' — Test', makeVocabQuiz(cat), ()=>{
+      progress.vocab[cat.id]=true; saveProgress(); render(); openCategory(catId);
+    });
+  };
+  const wrap = detail.querySelector('#cardsWrap');
+  cat.words.forEach(w=>{
+    const c=document.createElement('div'); c.className='flashcard';
+    const hasArt = !!w.article;
+    const word = hasArt ? w.de.replace(/^(der|die|das)\s/,'') : w.de;
+    c.innerHTML=`<div class="de">${hasArt?`<span class="article">${w.article}</span>`:''}${word}</div><div class="tr">${w.tr}</div><div class="hint">çevir</div>`;
+    c.onclick=()=>c.classList.toggle('flipped');
+    wrap.appendChild(c);
+  });
+}
+
+function renderGrammar(){
+  const list = document.getElementById('grammarList');
+  list.innerHTML='';
+  grammarTopics.forEach(t=>{
+    const done = !!progress.grammar[t.id];
+    const el = document.createElement('div');
+    el.className='topic'+(done?' done':'');
+    let tableHtml='';
+    if(t.table){
+      tableHtml = `<div class="table-scroll"><table class="gtable"><tr>${t.table.h.map(h=>`<th>${h}</th>`).join('')}</tr>${t.table.r.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+    }
+    const examplesHtml = t.examples.map(ex=>`<div class="example-box">${ex[0]}<span class="tr-line">${ex[1]}</span></div>`).join('');
+    el.innerHTML=`
+      <div class="stamp" style="top:10px;right:44px;">${STAMP_SVG}</div>
+      <div class="topic-head">
+        <div><span class="topic-tag">${t.tag}</span><h3>${t.title}</h3></div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="topic-body">
+        <p>${t.p}</p>
+        ${tableHtml}
+        ${examplesHtml}
+        <div class="topic-actions">
+          <button class="topic-quiz-btn">Konu Testi (${t.quiz.length} soru)</button>
+          <button class="topic-mark ${done?'done':''}">${done?'✓ Tamamlandı':'Manuel işaretle'}</button>
+        </div>
+      </div>`;
+    el.querySelector('.topic-head').onclick=()=>el.classList.toggle('open');
+    el.querySelector('.topic-mark').onclick=(e)=>{
+      e.stopPropagation();
+      progress.grammar[t.id]=!progress.grammar[t.id]; saveProgress(); render();
+    };
+    el.querySelector('.topic-quiz-btn').onclick=(e)=>{
+      e.stopPropagation();
+      startQuiz(t.title+' — Test', t.quiz, ()=>{ progress.grammar[t.id]=true; saveProgress(); render(); });
+    };
+    list.appendChild(el);
+  });
+  document.getElementById('metaGrammarTotal').textContent = grammarTopics.length;
+}
+
+function updateProgressBar(){
+  const total = vocabCategories.length + grammarTopics.length;
+  const done = Object.values(progress.vocab).filter(Boolean).length + Object.values(progress.grammar).filter(Boolean).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('metaStatus').textContent = pct===100?'Tamamlandı 🎉':(pct===0?'Başlanmadı':'Devam ediyor');
+}
+
+function render(){ renderVocabOverview(); renderGrammar(); updateProgressBar(); }
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const target=tab.dataset.tab;
+    document.getElementById('page-wortschatz').style.display = target==='wortschatz'?'block':'none';
+    document.getElementById('page-grammatik').style.display = target==='grammatik'?'block':'none';
+  };
+});
+
+loadProgress();
+</script>
+</body>
+</html>
