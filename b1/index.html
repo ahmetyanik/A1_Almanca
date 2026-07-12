@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprachpass — Deutsch B1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1EBDA; --paper-dark:#E7DFC7;
+    --navy:#1E2B45; --navy-deep:#131D30;
+    --stamp-red:#A23A2A; --stamp-gold:#AD8A2E;
+    --ink:#2B2620; --ink-soft:#5B5445;
+    --line:#C9BFA0; --green:#3F6B4F; --wrong:#9C3B3B;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased;}
+  .app{max-width:920px; margin:0 auto; padding:0 0 60px;
+    background:repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(43,38,32,0.035) 28px); min-height:100vh;}
+
+  .cover{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%); color:var(--paper);
+    padding:36px 28px 30px; position:relative; overflow:hidden; border-bottom:6px solid var(--stamp-gold);}
+  .cover::before{content:""; position:absolute; inset:10px; border:1px solid rgba(241,235,218,0.25); pointer-events:none;}
+  .cover-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--stamp-gold); margin:0 0 10px;}
+  .cover-title{font-family:'Fraunces',serif; font-weight:700; font-size:42px; line-height:1.05; margin:0 0 8px; letter-spacing:-.01em;}
+  .cover-sub{font-size:14.5px; color:rgba(241,235,218,0.75); max-width:560px; line-height:1.55; margin:0;}
+  .cover-meta{margin-top:22px; display:flex; gap:26px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:rgba(241,235,218,0.65); flex-wrap:wrap;}
+  .cover-meta b{color:var(--paper); font-weight:600;}
+
+  .tabs{display:flex; background:var(--paper-dark); border-bottom:2px solid var(--navy); position:sticky; top:0; z-index:20;}
+  .tab{flex:1; padding:14px 10px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:.08em;
+    text-transform:uppercase; font-weight:600; color:var(--ink-soft); cursor:pointer; border:none; background:transparent;
+    border-right:1px solid var(--line); transition:background .15s,color .15s;}
+  .tab:last-child{border-right:none;}
+  .tab.active{background:var(--navy); color:var(--paper);}
+  .tab .count{display:block; font-family:'IBM Plex Sans',sans-serif; font-size:10px; font-weight:400; margin-top:3px; opacity:.65; text-transform:none; letter-spacing:0;}
+
+  .page{padding:26px 24px 10px;}
+  .page-intro{font-size:13.5px; color:var(--ink-soft); line-height:1.6; max-width:640px; margin:0 0 22px;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px;}
+  .cat-card{background:#fff; border:1px solid var(--line); border-radius:3px; padding:16px 14px; cursor:pointer;
+    position:relative; text-align:left; transition:transform .12s,box-shadow .12s; box-shadow:0 1px 0 rgba(43,38,32,0.05);}
+  .cat-card:hover{transform:translateY(-2px); box-shadow:0 6px 14px rgba(30,43,69,0.12);}
+  .cat-card .cat-title{font-family:'Fraunces',serif; font-weight:600; font-size:16.5px; margin:0 0 4px; color:var(--navy);}
+  .cat-card .cat-count{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin:0;}
+  .stamp{position:absolute; top:8px; right:8px; width:34px; height:34px; transform:rotate(-14deg); opacity:0; transition:opacity .2s; pointer-events:none;}
+  .cat-card.done .stamp,.topic.done .stamp{opacity:1;}
+  .stamp svg{width:100%; height:100%; display:block;}
+
+  .back-btn{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--navy); background:none; border:none; cursor:pointer; padding:0 0 18px; display:flex; align-items:center; gap:6px;}
+  .back-btn:hover{color:var(--stamp-red);}
+  .cat-header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+  .cat-header h2{font-family:'Fraunces',serif; font-size:26px; margin:0; color:var(--navy);}
+  .header-btns{display:flex; gap:8px; flex-wrap:wrap;}
+  .mark-btn,.quiz-btn{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    border:none; padding:9px 16px; border-radius:2px; cursor:pointer;}
+  .mark-btn{background:var(--navy); color:var(--paper);}
+  .mark-btn.done{background:var(--green);}
+  .quiz-btn{background:var(--stamp-red); color:#fff;}
+
+  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px;}
+  .flashcard{background:#fff; border:1px solid var(--line); border-radius:3px; padding:14px 16px; cursor:pointer;
+    min-height:96px; display:flex; flex-direction:column; justify-content:center; position:relative;}
+  .flashcard .de{font-family:'Fraunces',serif; font-weight:600; font-size:15.5px; line-height:1.35; color:var(--navy);}
+  .flashcard .article{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--stamp-red); margin-right:6px;}
+  .flashcard .tr{margin-top:7px; font-size:13.5px; color:var(--ink-soft); display:none;}
+  .flashcard.flipped .tr{display:block;}
+  .flashcard .hint{position:absolute; bottom:7px; right:10px; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--line);}
+
+  .topic-list{display:flex; flex-direction:column; gap:10px;}
+  .topic{background:#fff; border:1px solid var(--line); border-radius:3px; position:relative; overflow:hidden;}
+  .topic-head{display:flex; align-items:center; justify-content:space-between; padding:15px 18px; cursor:pointer; gap:10px;}
+  .topic-head h3{font-family:'Fraunces',serif; font-size:17px; margin:2px 0 0; color:var(--navy); font-weight:600;}
+  .topic-tag{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-soft); letter-spacing:.05em;}
+  .chevron{font-family:'IBM Plex Mono',monospace; color:var(--ink-soft); transition:transform .15s; font-size:13px;}
+  .topic.open .chevron{transform:rotate(90deg);}
+  .topic-body{max-height:0; overflow:hidden; transition:max-height .3s ease; padding:0 18px; border-top:1px solid transparent;}
+  .topic.open .topic-body{max-height:3000px; padding:0 18px 18px; border-top:1px solid var(--line);}
+  .topic-body p{font-size:13.5px; line-height:1.65; margin:14px 0 10px;}
+  .example-box{background:var(--paper); border-left:3px solid var(--stamp-gold); padding:10px 14px; margin:8px 0;
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; line-height:1.7; color:var(--navy);}
+  .example-box .tr-line{display:block; color:var(--ink-soft); font-family:'IBM Plex Sans',sans-serif; font-size:12px; font-style:italic;}
+  table.gtable{border-collapse:collapse; margin:10px 0; font-size:12.5px; width:100%;}
+  table.gtable th,table.gtable td{border:1px solid var(--line); padding:6px 10px; text-align:left;}
+  table.gtable th{background:var(--paper-dark); font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.04em;}
+  .topic-actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .topic-mark{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+    background:none; border:1px solid var(--navy); color:var(--navy); padding:7px 14px; border-radius:2px; cursor:pointer;}
+  .topic-mark.done{background:var(--green); border-color:var(--green); color:#fff;}
+  .topic-quiz-btn{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+    background:var(--stamp-red); border:1px solid var(--stamp-red); color:#fff; padding:7px 14px; border-radius:2px; cursor:pointer;}
+
+  /* Quiz overlay */
+  .quiz-overlay{position:fixed; inset:0; background:rgba(19,29,48,0.85); z-index:50; display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:30px 16px;}
+  .quiz-overlay.show{display:flex;}
+  .quiz-panel{background:var(--paper); border:2px solid var(--stamp-gold); border-radius:4px; max-width:560px; width:100%; padding:26px 26px 22px; position:relative;}
+  .quiz-panel h3{font-family:'Fraunces',serif; font-size:22px; margin:0 0 4px; color:var(--navy);}
+  .quiz-progress{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); margin-bottom:16px;}
+  .quiz-q{font-size:16px; font-weight:600; margin:0 0 14px; line-height:1.5;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{background:#fff; border:1px solid var(--line); border-radius:3px; padding:11px 14px; font-size:14px; text-align:left; cursor:pointer; transition:border-color .1s;}
+  .quiz-opt:hover{border-color:var(--navy);}
+  .quiz-opt.correct{background:#E8F0E9; border-color:var(--green); color:var(--green); font-weight:600;}
+  .quiz-opt.wrong{background:#F5E4E2; border-color:var(--wrong); color:var(--wrong);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-next{margin-top:16px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    background:var(--navy); color:var(--paper); border:none; padding:10px 18px; border-radius:2px; cursor:pointer; display:none;}
+  .quiz-next.show{display:inline-block;}
+  .quiz-close{position:absolute; top:10px; right:12px; background:none; border:none; font-size:20px; color:var(--ink-soft); cursor:pointer;}
+  .quiz-result{text-align:center; padding:14px 0 4px;}
+  .quiz-result .score{font-family:'Fraunces',serif; font-size:44px; font-weight:700; color:var(--navy); margin:6px 0;}
+  .quiz-result .verdict{font-size:14px; color:var(--ink-soft); margin-bottom:14px;}
+  .quiz-result .verdict.pass{color:var(--green); font-weight:600;}
+
+  .progress-bar-wrap{padding:18px 24px 26px;}
+  .progress-label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); letter-spacing:.05em; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between;}
+  .progress-track{height:8px; background:var(--paper-dark); border:1px solid var(--line); border-radius:4px; overflow:hidden;}
+  .progress-fill{height:100%; background:linear-gradient(90deg,var(--stamp-gold),var(--stamp-red)); width:0%; transition:width .3s;}
+
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:10px 0;}
+  .table-scroll table.gtable{margin:0; min-width:340px;}
+
+  /* ===== Responsive ===== */
+  @media(max-width:680px){
+    .page{padding:20px 14px 8px;}
+    .cover{padding:26px 18px 22px;}
+    .cover-meta{gap:14px; font-size:10.5px;}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:9px;}
+    .cat-card{padding:12px 11px;}
+    .cat-card .cat-title{font-size:14.5px;}
+    .cards{grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:9px;}
+    .flashcard{padding:12px 12px; min-height:78px;}
+    .flashcard .de{font-size:15.5px;}
+    .flashcard .tr{font-size:12.5px;}
+    .cat-header h2{font-size:21px;}
+    .header-btns{width:100%;}
+    .mark-btn,.quiz-btn{flex:1; padding:12px 10px; font-size:10.5px;}
+    .topic-head{padding:13px 14px;}
+    .topic-head h3{font-size:15.5px;}
+    .topic.open .topic-body{padding:0 14px 16px;}
+    .topic-body p{font-size:13px;}
+    .example-box{font-size:12px; padding:9px 12px;}
+    table.gtable{font-size:11.5px;}
+    table.gtable th,table.gtable td{padding:5px 7px;}
+    .topic-actions{flex-direction:column;}
+    .topic-mark,.topic-quiz-btn{width:100%; padding:12px 14px; text-align:center;}
+    .progress-bar-wrap{padding:16px 14px 22px;}
+  }
+  @media(max-width:520px){
+    .cover-title{font-size:30px;}
+    .cover-sub{font-size:13.5px;}
+    .tab{font-size:10.5px; padding:12px 4px; letter-spacing:.04em;}
+    .tab .count{font-size:9px;}
+    .quiz-overlay{padding:12px 8px; align-items:stretch;}
+    .quiz-panel{padding:20px 16px 18px; max-width:none; border-radius:6px; margin:auto 0;}
+    .quiz-panel h3{font-size:18px; padding-right:28px;}
+    .quiz-q{font-size:15px;}
+    .quiz-opt{padding:13px 13px; font-size:14px;}
+    .quiz-next{width:100%; padding:13px; text-align:center;}
+    .quiz-result .score{font-size:36px;}
+  }
+  @media(max-width:360px){
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .cards{grid-template-columns:repeat(2,1fr);}
+    .cover-title{font-size:26px;}
+  }
+  @media(hover:none){
+    .cat-card:hover{transform:none; box-shadow:0 1px 0 rgba(43,38,32,0.05);}
+    .cat-card:active{background:var(--paper-dark);}
+    .quiz-opt:active{border-color:var(--navy);}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="cover">
+    <p class="cover-eyebrow">Spektrum Deutsch B1+ · Wörter und Wendungen</p>
+    <h1 class="cover-title">Sprachpass</h1>
+    <p class="cover-sub">Almanca B1 için 12 bölümlük kalıp/deyim hazinesi (Spektrum B1+ kaynaklı), ileri seviye gramer konuları ve konu sonu testleri. Testi geçince (%75+) pasaportuna damga otomatik basılır.</p>
+    <div class="cover-meta">
+      <span>KALIP/DEYIM: <b id="metaVocabTotal">–</b></span>
+      <span>GRAMER KONUSU: <b id="metaGrammarTotal">–</b></span>
+      <span>DURUM: <b id="metaStatus">Yükleniyor…</b></span>
+    <div style="margin-top:16px;">
+      <a href="../" style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.05em; color:var(--stamp-gold); text-decoration:none; border:1px solid rgba(173,138,46,0.5); padding:7px 14px; border-radius:2px; display:inline-block;">← A1 seviyesine dön</a>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="wortschatz">Wortschatz<span class="count">Kelime Bilgisi</span></button>
+    <button class="tab" data-tab="grammatik">Grammatik<span class="count">Konu Anlatımı + Test</span></button>
+  </div>
+
+  <div class="page" id="page-wortschatz">
+    <p class="page-intro">Spektrum Deutsch B1+ kitabının 12 bölümüne dayalı günlük kalıplar ve deyimler. Kartlara tıklayarak Türkçesini gör; hazır hissedince bölüm testine gir. %75 ve üzeri başarı bölümü otomatik damgalar.</p>
+    <div id="vocabOverview" class="grid"></div>
+    <div id="vocabDetail" style="display:none;"></div>
+  </div>
+
+  <div class="page" id="page-grammatik" style="display:none;">
+    <p class="page-intro">B1 seviyesi ileri gramer konuları: Nebensätze, Passiv, Konjunktiv II, Genitiv, Relativsätze ve daha fazlası — her konuda Türkçe anlatım, tablolar, örnekler ve konu sonu testi.</p>
+    <div id="grammarList" class="topic-list"></div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label"><span>Genel İlerleme</span><span id="progressPct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div class="quiz-overlay" id="quizOverlay">
+  <div class="quiz-panel">
+    <button class="quiz-close" id="quizClose">✕</button>
+    <h3 id="quizTitle">Test</h3>
+    <p class="quiz-progress" id="quizProgress"></p>
+    <div id="quizBody"></div>
+  </div>
+</div>
+
+<script>
+const STAMP_SVG = `<svg viewBox="0 0 100 100"><g fill="none" stroke="#A23A2A" stroke-width="4"><circle cx="50" cy="50" r="42" stroke-dasharray="6 4"/></g><text x="50" y="46" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#A23A2A" transform="rotate(-8 50 50)">GEPRÜFT</text><text x="50" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#A23A2A" transform="rotate(-8 50 50)">A1 · OK</text></svg>`;
+
+// =============== VOCABULARY (Goethe A1 tematik gruplar) ===============
+const V = (de,tr,article)=> article ? {de,tr,article} : {de,tr};
+const vocabCategories = [{"id": "k1", "title": "Kapitel 1 — Alltag & Beruf", "words": [{"de": "mit dem Alltag (sehr) zufrieden sein", "tr": "günlük hayattan (çok) memnun olmak"}, {"de": "den Alltag abwechslungsreich finden", "tr": "günlük hayatı çeşitli/hareketli bulmak"}, {"de": "sein Leben selbst bestimmen können", "tr": "kendi hayatını kendi belirleyebilmek"}, {"de": "sich über den Verkehr ärgern", "tr": "trafiğe sinirlenmek"}, {"de": "Mich nervt es, wenn ...", "tr": "...-dığında sinirime dokunuyor"}, {"de": "sich über kleine Komplimente freuen", "tr": "küçük iltifatlardan mutlu olmak"}, {"de": "ein Lob bekommen", "tr": "övgü/takdir almak"}, {"de": "Erfolge im Beruf feiern", "tr": "iş hayatındaki başarıları kutlamak"}, {"de": "von mehr Freizeit träumen", "tr": "daha fazla boş zaman hayal etmek"}, {"de": "Einer Umfrage zufolge ...", "tr": "bir ankete göre ..."}, {"de": "Laut einer Studie ...", "tr": "bir çalışmaya göre ..."}, {"de": "am liebsten Krimis sehen", "tr": "en çok polisiye izlemeyi sevmek"}, {"de": "Spannung bieten", "tr": "gerilim/heyecan sunmak"}, {"de": "Straftaten aufklären", "tr": "suçları aydınlatmak"}, {"de": "um Mithilfe bitten", "tr": "yardım istemek"}, {"de": "Täter verhaften", "tr": "faili yakalamak/tutuklamak"}, {"de": "die Bösen besiegen", "tr": "kötüleri yenmek"}, {"de": "als Redakteur bei einem Verlag arbeiten", "tr": "bir yayınevinde editör olarak çalışmak"}, {"de": "E-Mails checken/beantworten", "tr": "e-postaları kontrol etmek/cevaplamak"}, {"de": "eine Besprechung haben", "tr": "bir toplantısı olmak"}, {"de": "Probleme lösen", "tr": "sorunları çözmek"}, {"de": "Ideen sammeln", "tr": "fikir toplamak"}, {"de": "an einer Konferenz teilnehmen", "tr": "bir konferansa katılmak"}, {"de": "Ergebnisse präsentieren", "tr": "sonuçları sunmak"}, {"de": "eine Prüfung haben", "tr": "bir sınavı olmak"}, {"de": "gute/schlechte Noten bekommen", "tr": "iyi/kötü not almak"}, {"de": "bei den Freizeitaktivitäten auf Platz eins liegen", "tr": "boş zaman etkinliklerinde bir numara olmak"}, {"de": "regelmäßig im Netz surfen", "tr": "düzenli olarak internette gezinmek"}, {"de": "sich mit Politik beschäftigen", "tr": "siyasetle ilgilenmek"}, {"de": "den Wunsch nach Ruhe haben", "tr": "huzur/sükunet arzusu duymak"}, {"de": "nichts tun und faulenzen", "tr": "hiçbir şey yapmayıp tembellik etmek"}, {"de": "stark zunehmen/abnehmen", "tr": "çok fazla kilo almak/vermek"}, {"de": "zu den Gewinnern/Verlierern zählen", "tr": "kazananlar/kaybedenler arasında yer almak"}, {"de": "an Attraktivität gewinnen/verlieren", "tr": "çekicilik kazanmak/kaybetmek"}, {"de": "gerade im Trend liegen", "tr": "şu anda trend olmak"}, {"de": "geboren werden", "tr": "doğmak"}, {"de": "einen Ort verlassen", "tr": "bir yeri terk etmek"}, {"de": "die Schule/das Studium abschließen", "tr": "okulu/üniversiteyi bitirmek"}, {"de": "ein Buch schreiben", "tr": "kitap yazmak"}, {"de": "Preise erhalten", "tr": "ödüller almak"}]}, {"id": "k2", "title": "Kapitel 2 — Essen & Restaurant", "words": [{"de": "die Möhren waschen/putzen/schälen/schneiden", "tr": "havuçları yıkamak/temizlemek/soymak/doğramak"}, {"de": "das Fleisch braten/grillen/pfeffern/salzen", "tr": "eti kızartmak/ızgara yapmak/biberlemek/tuzlamak"}, {"de": "eine Suppe kochen/umrühren", "tr": "çorba pişirmek/karıştırmak"}, {"de": "rohe Eier verrühren", "tr": "çiğ yumurtaları çırpmak"}, {"de": "etwas mit Petersilie bestreuen", "tr": "bir şeyi maydanozla süslemek"}, {"de": "auf der Suche nach etwas sein, das wirklich schmeckt", "tr": "gerçekten lezzetli bir şey arayışında olmak"}, {"de": "für seltsame Essgewohnheiten bekannt sein", "tr": "tuhaf yeme alışkanlıklarıyla bilinmek"}, {"de": "an glückliche Kindheitstage erinnern", "tr": "mutlu çocukluk günlerini hatırlatmak"}, {"de": "Ich schlage vor, dass ...", "tr": "öneriyorum ki ..."}, {"de": "Was hältst du davon, wenn ...", "tr": "...-sa ne dersin?"}, {"de": "Das ist eine/keine gute Idee!", "tr": "bu iyi bir fikir!/değil!"}, {"de": "Das finde ich prima.", "tr": "bunu harika buluyorum."}, {"de": "Ich denke, es ist besser, wenn ...", "tr": "bence ...-sa daha iyi olur"}, {"de": "sich zu wenig bewegen", "tr": "yeterince hareket etmemek"}, {"de": "zu viele Kalorien aufnehmen", "tr": "fazla kalori almak"}, {"de": "negative Auswirkungen auf die Gesundheit haben", "tr": "sağlık üzerinde olumsuz etkileri olmak"}, {"de": "eine flexible Zeitplanung brauchen", "tr": "esnek bir zaman planlamasına ihtiyaç duymak"}, {"de": "sich keine Zeit für das Essen nehmen", "tr": "yemek için zaman ayırmamak"}, {"de": "als gesund gelten", "tr": "sağlıklı sayılmak"}, {"de": "sich von Fertiggerichten ernähren", "tr": "hazır yemeklerle beslenmek"}, {"de": "zu den ältesten/bekanntesten Restaurants gehören", "tr": "en eski/en bilinen restoranlar arasında olmak"}, {"de": "einen guten/schlechten Ruf haben", "tr": "iyi/kötü bir üne sahip olmak"}, {"de": "in wirtschaftliche Schwierigkeiten geraten", "tr": "ekonomik zorluklara düşmek"}, {"de": "viel/wenig Umsatz machen", "tr": "çok/az ciro yapmak"}, {"de": "vegetarische Gerichte anbieten", "tr": "vejetaryen yemekler sunmak"}, {"de": "zum Markenzeichen des Hauses werden", "tr": "evin/mekanın simgesi haline gelmek"}, {"de": "für seine Kaffeespezialitäten berühmt sein", "tr": "kahve özellikleriyle ünlü olmak"}, {"de": "ein beliebter Treffpunkt sein", "tr": "popüler bir buluşma noktası olmak"}, {"de": "typische Speisen genießen", "tr": "tipik yemeklerin tadını çıkarmak"}, {"de": "eine Spezialität des Hauses sein", "tr": "evin spesiyalitesi olmak"}, {"de": "jemanden zum Essen einladen", "tr": "birini yemeğe davet etmek"}]}, {"id": "k3", "title": "Kapitel 3 — Berufe & Telefon", "words": [{"de": "gute Zukunftschancen bieten", "tr": "iyi gelecek fırsatları sunmak"}, {"de": "einen sicheren Arbeitsplatz bieten", "tr": "güvenli bir iş yeri sağlamak"}, {"de": "immer Arbeit finden", "tr": "her zaman iş bulmak"}, {"de": "bestimmte Interessen und Fähigkeiten haben", "tr": "belirli ilgi ve yeteneklere sahip olmak"}, {"de": "bei der Berufswahl eine Rolle spielen", "tr": "meslek seçiminde rol oynamak"}, {"de": "über Berufsperspektiven nachdenken", "tr": "meslek perspektifleri üzerine düşünmek"}, {"de": "das Arbeitsleben verändern", "tr": "iş yaşamını değiştirmek"}, {"de": "an Ansehen verlieren/gewinnen", "tr": "saygınlık kaybetmek/kazanmak"}, {"de": "feste oder flexible Arbeitszeiten", "tr": "sabit ya da esnek çalışma saatleri"}, {"de": "Überstunden machen", "tr": "fazla mesai yapmak"}, {"de": "ein gutes Gehalt bekommen", "tr": "iyi bir maaş almak"}, {"de": "Kann ich Ihnen helfen?", "tr": "size yardımcı olabilir miyim?"}, {"de": "Könnte ich bitte Frau Müller sprechen?", "tr": "Bayan Müller ile konuşabilir miyim lütfen?"}, {"de": "Worum geht es?", "tr": "konu nedir?"}, {"de": "Wie war Ihr Name?", "tr": "adınız neydi?"}, {"de": "Kann ich etwas ausrichten?", "tr": "bir mesaj iletebilir miyim?"}, {"de": "mich zurückrufen", "tr": "beni geri aramak"}, {"de": "Ich gebe Ihnen Bescheid.", "tr": "size haber veririm."}, {"de": "einen Termin vereinbaren", "tr": "randevu ayarlamak"}, {"de": "Wann hätten Sie Zeit?", "tr": "ne zaman vaktiniz olur?"}, {"de": "kranke Menschen untersuchen/behandeln/pflegen", "tr": "hasta insanları muayene etmek/tedavi etmek/bakmak"}, {"de": "andere Menschen vor Gericht vertreten", "tr": "insanları mahkemede temsil etmek"}, {"de": "neue Softwareprogramme schreiben", "tr": "yeni yazılım programları yazmak"}, {"de": "Kunden beraten und Produkte verkaufen", "tr": "müşterilere danışmanlık yapmak ve ürün satmak"}, {"de": "sich mit Daten beschäftigen", "tr": "verilerle uğraşmak"}, {"de": "die IT-Sicherheit überprüfen", "tr": "bilgi güvenliğini kontrol etmek"}, {"de": "Protokolle schreiben", "tr": "tutanak yazmak"}, {"de": "Mitarbeiter führen/weiterbilden", "tr": "çalışanları yönetmek/eğitmek"}, {"de": "Entscheidungen treffen", "tr": "kararlar almak"}, {"de": "Dienstreisen machen", "tr": "iş seyahati yapmak"}, {"de": "die Gesprächspartner gut kennen", "tr": "görüşme ortağını iyi tanımak"}, {"de": "einen guten Eindruck machen", "tr": "iyi bir izlenim bırakmak"}, {"de": "Sehr geehrte Damen und Herren,", "tr": "Sayın yetkili,"}, {"de": "Mit freundlichen Grüßen", "tr": "saygılarımla"}, {"de": "Ich bin der Meinung, dass ...", "tr": "kanaatimce ..."}, {"de": "eine große Rolle spielen", "tr": "büyük bir rol oynamak"}, {"de": "In diesem Punkt stimme ich Ihnen (nicht) zu.", "tr": "bu konuda size katılıyorum/katılmıyorum."}]}, {"id": "k4", "title": "Kapitel 4 — Lernen & Gedächtnis", "words": [{"de": "an einer Weiterbildung teilnehmen", "tr": "bir eğitime/kursa katılmak"}, {"de": "sich für eine Prüfung einschreiben", "tr": "bir sınava kaydolmak"}, {"de": "die Vorlesung interessant/langweilig finden", "tr": "dersi ilginç/sıkıcı bulmak"}, {"de": "eine Prüfung ablegen/bestehen", "tr": "bir sınava girmek/geçmek"}, {"de": "etwas macht Spaß", "tr": "bir şey eğlencelidir"}, {"de": "das Gelernte direkt anwenden", "tr": "öğrenileni doğrudan uygulamak"}, {"de": "Man sollte Wörter mehrmals wiederholen.", "tr": "kelimeleri birkaç kez tekrarlamak gerekir."}, {"de": "den eigenen Lerntyp erkennen", "tr": "kendi öğrenme tipini tanımak"}, {"de": "aktive Übungen machen", "tr": "aktif alıştırmalar yapmak"}, {"de": "absolute Stille brauchen", "tr": "tam bir sessizlik gerektirmek"}, {"de": "neue Informationen visualisieren", "tr": "yeni bilgileri görselleştirmek"}, {"de": "neue Wörter mit Bildern verbinden", "tr": "yeni kelimeleri resimlerle ilişkilendirmek"}, {"de": "etwas farbig hervorheben", "tr": "bir şeyi renkli olarak vurgulamak"}, {"de": "die Struktur einer Fremdsprache verstehen wollen", "tr": "bir yabancı dilin yapısını anlamak istemek"}, {"de": "Mich interessiert der Kurs.", "tr": "kurs ilgimi çekiyor."}, {"de": "Ich möchte mehr über ... erfahren.", "tr": "... hakkında daha fazla bilgi edinmek istiyorum."}, {"de": "Ich wollte schon immer ... lernen.", "tr": "hep ... öğrenmek istemişimdir."}, {"de": "ein gutes/schlechtes Gedächtnis haben", "tr": "iyi/kötü bir hafızaya sahip olmak"}, {"de": "sich Zahlen gut merken können", "tr": "sayıları iyi hatırlayabilmek"}, {"de": "in Vergessenheit geraten", "tr": "unutulmak"}, {"de": "Informationen mit Interesse aufnehmen", "tr": "bilgileri ilgiyle almak"}, {"de": "ins Kurzzeitgedächtnis/Langzeitgedächtnis gelangen", "tr": "kısa/uzun vadeli belleğe girmek"}, {"de": "aus dem Gedächtnis gelöscht werden", "tr": "hafızadan silinmek"}, {"de": "den bestmöglichen Lernerfolg erzielen", "tr": "en iyi öğrenme başarısını elde etmek"}, {"de": "Gelerntes in regelmäßigen Abständen wiederholen", "tr": "öğrenileni düzenli aralıklarla tekrarlamak"}, {"de": "Verbindungen im Gehirn aktivieren", "tr": "beyindeki bağlantıları harekete geçirmek"}, {"de": "vor dem Einschlafen lernen", "tr": "uyumadan önce öğrenmek"}, {"de": "Ereignisse im Schlaf verarbeiten", "tr": "olayları uykuda işlemek"}, {"de": "lautes Lesen bevorzugen", "tr": "yüksek sesle okumayı tercih etmek"}, {"de": "einen Schulabschluss nachholen können", "tr": "yarım kalan bir diplomayı tamamlayabilmek"}, {"de": "finanziell unterstützt werden", "tr": "mali destek almak"}, {"de": "auf Wirtschaftlichkeit achten", "tr": "ekonomikliğe dikkat etmek"}, {"de": "das Fehlen technischer Geräte kritisieren", "tr": "teknik cihaz eksikliğini eleştirmek"}, {"de": "ein gutes Preis-Leistungs-Verhältnis bieten", "tr": "iyi bir fiyat-performans oranı sunmak"}]}, {"id": "k5", "title": "Kapitel 5 — Städte & Grün", "words": [{"de": "Die Stadt hat 110 000 Einwohner.", "tr": "şehrin 110.000 nüfusu var."}, {"de": "wurde 830 zum ersten Mal erwähnt", "tr": "830 yılında ilk kez zikredildi"}, {"de": "das Stadtrecht erhalten", "tr": "şehir haklarını almak"}, {"de": "eine bekannte Universitätsstadt sein", "tr": "bilinen bir üniversite şehri olmak"}, {"de": "eine große Rolle spielen", "tr": "büyük bir rol oynamak"}, {"de": "bedeutende Bauwerke", "tr": "önemli yapılar"}, {"de": "besonders sehenswert sein", "tr": "özellikle görülmeye değer olmak"}, {"de": "ein Wahrzeichen der Stadt sein", "tr": "şehrin simgesi olmak"}, {"de": "als Geheimtipp gelten", "tr": "gizli bir öneri olarak kabul edilmek"}, {"de": "zu den bedeutendsten Dichtern zählen", "tr": "en önemli şairler arasında yer almak"}, {"de": "kulturell viel zu bieten haben", "tr": "kültürel olarak sunacak çok şeyi olmak"}, {"de": "an Attraktivität verloren haben", "tr": "çekiciliğini kaybetmiş olmak"}, {"de": "mit einem Titel werben", "tr": "bir unvanla reklam yapmak"}, {"de": "einen genauen Überblick bekommen", "tr": "tam bir genel bakış elde etmek"}, {"de": "öffentliche Grünflächen/Parks", "tr": "kamuya açık yeşil alanlar/parklar"}, {"de": "zur Erholung dienen", "tr": "dinlenmeye hizmet etmek"}, {"de": "Schadstoffe aufnehmen", "tr": "kirletici maddeleri absorbe etmek"}, {"de": "für saubere Luft sorgen", "tr": "temiz hava sağlamak"}, {"de": "den Straßenlärm reduzieren", "tr": "sokak gürültüsünü azaltmak"}, {"de": "eine hohe Anziehungskraft besitzen", "tr": "yüksek bir çekiciliğe sahip olmak"}, {"de": "zu den boomenden Städten gehören", "tr": "hızla büyüyen şehirler arasında olmak"}, {"de": "Viele Gebäude wurden zerstört.", "tr": "birçok bina yıkıldı."}, {"de": "ein wichtiger Wirtschaftsstandort sein", "tr": "önemli bir ekonomik merkez olmak"}, {"de": "wirtschaftliche Gewinne erzielen", "tr": "ekonomik kazanç elde etmek"}, {"de": "unter einem Namen weltberühmt werden", "tr": "bir isimle dünya çapında ünlü olmak"}, {"de": "Menschen anlocken/anziehen", "tr": "insanları çekmek"}, {"de": "Die Preise steigen.", "tr": "fiyatlar yükseliyor."}, {"de": "zum Weltkulturerbe der UNESCO gehören", "tr": "UNESCO Dünya Mirası listesine dahil olmak"}, {"de": "es in die Schlagzeilen schaffen", "tr": "manşetlere çıkmak"}, {"de": "durch einen technischen Defekt in Brand geraten", "tr": "teknik bir arızadan dolayı yanmak"}, {"de": "zerstört/restauriert werden", "tr": "yıkılmak/restore edilmek"}, {"de": "Appetit auf Thüringer Bratwurst haben", "tr": "Thüringen sosisi yeme isteği duymak"}, {"de": "Ich würde am liebsten ... essen.", "tr": "en çok ... yemeyi tercih ederim."}, {"de": "Wie wäre es, wenn wir uns treffen würden?", "tr": "buluşsak nasıl olur?"}]}, {"id": "k6", "title": "Kapitel 6 — Gesundheit & Körper", "words": [{"de": "kein/weniger Fleisch essen", "tr": "et yememek/az et yemek"}, {"de": "sich vegetarisch/gesund ernähren", "tr": "vejetaryen/sağlıklı beslenmek"}, {"de": "auf die Ernährung achten", "tr": "beslenmeye dikkat etmek"}, {"de": "regelmäßig Sport treiben", "tr": "düzenli olarak spor yapmak"}, {"de": "Nahrungsergänzungsmittel nehmen", "tr": "besin takviyesi almak"}, {"de": "sich entspannen", "tr": "rahatlamak"}, {"de": "sein Ziel erreichen", "tr": "hedefine ulaşmak"}, {"de": "sich viel bewegen", "tr": "çok hareket etmek"}, {"de": "ins Fitnessstudio gehen", "tr": "spor salonuna gitmek"}, {"de": "sich ausruhen", "tr": "dinlenmek"}, {"de": "sich gesund/gestresst fühlen", "tr": "sağlıklı/gergin hissetmek"}, {"de": "unkonzentriert/müde sein", "tr": "konsantre olamamak/yorgun olmak"}, {"de": "Ich habe eine Erkältung/Grippe/Migräne.", "tr": "soğuk algınlığım/gribim/migrenim var."}, {"de": "unter Übelkeit leiden", "tr": "mide bulantısı çekmek"}, {"de": "eine Überweisung zum Facharzt bekommen", "tr": "uzman doktora sevk almak"}, {"de": "lange auf einen Termin warten", "tr": "randevu için uzun süre beklemek"}, {"de": "behandelt werden", "tr": "tedavi edilmek"}, {"de": "die Behandlung bezahlen", "tr": "tedaviyi ödemek"}, {"de": "Du solltest einen Mittagsschlaf machen.", "tr": "öğle uykusu yapmalısın."}, {"de": "ein Mittagstief haben", "tr": "öğleden sonra enerji düşüklüğü yaşamak"}, {"de": "die Konzentrationsfähigkeit verbessern", "tr": "konsantrasyon yeteneğini geliştirmek"}, {"de": "Stress abbauen", "tr": "stresi azaltmak"}, {"de": "keinen guten Ruf haben", "tr": "iyi bir üne sahip olmamak"}, {"de": "als schwach und faul gelten", "tr": "zayıf ve tembel olarak görülmek"}, {"de": "in den Unternehmensalltag integriert werden", "tr": "iş günlüğüne entegre edilmek"}, {"de": "einen Kräutertee trinken", "tr": "bitki çayı içmek"}, {"de": "Rezepte von Generation zu Generation weitergeben", "tr": "tarifleri nesilden nesile aktarmak"}, {"de": "die Schmerzen lindern", "tr": "ağrıları hafifletmek"}, {"de": "entzündungshemmend wirken", "tr": "antiinflamatuar etki göstermek"}, {"de": "eine antibakterielle Wirkung haben", "tr": "antibakteriyel etkiye sahip olmak"}, {"de": "einen Insektenstich desinfizieren", "tr": "bir böcek ısırığını dezenfekte etmek"}, {"de": "mehr Vorteile als Nachteile haben", "tr": "dezavantajlarından daha çok avantajı olmak"}, {"de": "Als Vorteil/Nachteil sehe ich, dass ...", "tr": "avantaj/dezavantaj olarak görüyorum ki ..."}]}, {"id": "k7", "title": "Kapitel 7 — Werte & Alltag", "words": [{"de": "einen Namen tragen", "tr": "bir isim taşımak"}, {"de": "viel über die Vorfahren verraten", "tr": "atalar hakkında çok şey ortaya koymak"}, {"de": "pünktlich im Büro erscheinen", "tr": "zamanında ofiste görünmek"}, {"de": "Dienst nach Vorschrift machen", "tr": "kurallara göre hizmet vermek"}, {"de": "unter Rückenschmerzen leiden", "tr": "sırt ağrısı çekmek"}, {"de": "vorsichtig mit Geld umgehen", "tr": "parayla dikkatli davranmak"}, {"de": "mit Bargeld/Bankkarte bezahlen", "tr": "nakit/kartla ödemek"}, {"de": "sparsam leben", "tr": "tutumlu yaşamak"}, {"de": "stabile Verhältnisse mögen", "tr": "istikrarlı koşulları sevmek"}, {"de": "Unsicherheit und Instabilität hassen", "tr": "belirsizlik ve istikrarsızlıktan nefret etmek"}, {"de": "nach dem günstigsten Angebot suchen", "tr": "en uygun teklifi aramak"}, {"de": "sich von etwas nicht trennen können", "tr": "bir şeyden ayrılamamak"}, {"de": "von einem Eigenheim träumen", "tr": "kendi evinden hayal etmek"}, {"de": "einen Kredit aufnehmen", "tr": "kredi çekmek"}, {"de": "ein Vermögen vererben", "tr": "miras bırakmak"}, {"de": "auf der Werteskala an erster Stelle stehen", "tr": "değer ölçeğinde ilk sırada yer almak"}, {"de": "sich von Straßenlärm genervt fühlen", "tr": "trafik gürültüsünden rahatsız olmak"}, {"de": "Ruhe und Kraft tanken", "tr": "huzur bulmak ve enerji depolamak"}, {"de": "eine große Liebe zur Natur haben", "tr": "doğaya büyük bir sevgi beslemek"}, {"de": "sich für den Umweltschutz engagieren", "tr": "çevre koruma için aktif rol almak"}, {"de": "Angst vor Naturkatastrophen haben", "tr": "doğal afetlerden korkmak"}, {"de": "auf Ordnung Wert legen", "tr": "düzene önem vermek"}, {"de": "etwas kritisch/positiv sehen", "tr": "bir şeyi eleştirel/olumlu görmek"}, {"de": "etwas kann schiefgehen", "tr": "bir şey ters gidebilir"}, {"de": "Behördengänge erledigen", "tr": "resmi işlemleri halletmek"}, {"de": "warten, bis man an der Reihe ist", "tr": "sırası gelene kadar beklemek"}, {"de": "etwas seltsam/unprofessionell finden", "tr": "bir şeyi tuhaf/profesyonel olmayan bulmak"}, {"de": "in fremden Ländern leben", "tr": "yabancı ülkelerde yaşamak"}, {"de": "sich über kulturelle Unterschiede informieren", "tr": "kültürel farklılıklar hakkında bilgi edinmek"}, {"de": "jemandem zur Begrüßung die Hand geben", "tr": "selamlarken el sıkmak"}, {"de": "mit dem Kopf nicken", "tr": "başını sallamak"}, {"de": "sich verbeugen", "tr": "eğilmek"}, {"de": "Körperkontakt vermeiden", "tr": "fiziksel temastan kaçınmak"}, {"de": "ein anderes Zeitverständnis haben", "tr": "farklı bir zaman anlayışına sahip olmak"}, {"de": "dem Gesprächspartner nicht offen widersprechen", "tr": "konuşma ortağına açıkça karşı çıkmamak"}, {"de": "sich selbst loben", "tr": "kendini övmek"}, {"de": "Wie ist das Wetter in ...?", "tr": "...-de hava nasıl?"}, {"de": "Haben Sie schon mal ... probiert?", "tr": "hiç ... denediniz mi?"}]}, {"id": "k8", "title": "Kapitel 8 — Konsum & Produkte", "words": [{"de": "Gegenstände besitzen/wegwerfen/verschenken", "tr": "eşyalara sahip olmak/atmak/hediye etmek"}, {"de": "sich in jemandes Besitz befinden", "tr": "birinin mülkiyetinde olmak"}, {"de": "eine Datenbank erstellen", "tr": "bir veritabanı oluşturmak"}, {"de": "das Gegenteil beweisen", "tr": "tam tersini kanıtlamak"}, {"de": "ein Experiment machen/abbrechen", "tr": "bir deney yapmak/sonlandırmak"}, {"de": "das Einkaufsverhalten ändern", "tr": "alışveriş davranışını değiştirmek"}, {"de": "beim Einkaufen auf den Preis achten", "tr": "alışverişte fiyata dikkat etmek"}, {"de": "eine Vorliebe für etwas haben", "tr": "bir şeye özel bir ilgisi olmak"}, {"de": "zu einem Ergebnis kommen", "tr": "bir sonuca varmak"}, {"de": "Konsequenzen aus etwas ziehen", "tr": "bir şeyden ders çıkarmak"}, {"de": "das beliebteste Label der Welt sein", "tr": "dünyanın en popüler markası olmak"}, {"de": "bei der Beliebtheit auf Platz eins liegen", "tr": "popülerlikte bir numara olmak"}, {"de": "Produkte loben", "tr": "ürünleri övmek"}, {"de": "vor minderwertigen Produkten warnen", "tr": "kalitesiz ürünlere karşı uyarmak"}, {"de": "Werbung für lästig/aufdringlich halten", "tr": "reklamları sıkıcı/baskıcı bulmak"}, {"de": "ein Produkt entwerfen/entwickeln", "tr": "bir ürün tasarlamak/geliştirmek"}, {"de": "auf den Markt kommen", "tr": "piyasaya çıkmak"}, {"de": "Marktführer werden", "tr": "pazar lideri olmak"}, {"de": "zum Erfolg der Firma beitragen", "tr": "şirketin başarısına katkıda bulunmak"}, {"de": "ein spektakuläres Design haben", "tr": "çarpıcı bir tasarıma sahip olmak"}, {"de": "leistungsstärker/schneller/wasserdicht sein", "tr": "daha güçlü/hızlı/su geçirmez olmak"}, {"de": "über einen größeren Speicherplatz verfügen", "tr": "daha büyük bir depolama alanına sahip olmak"}, {"de": "das Gerät an ein Netzteil anschließen", "tr": "cihazı bir adaptöre bağlamak"}, {"de": "mit einem Passwort schützen", "tr": "bir şifre ile korumak"}, {"de": "ein gutes Preis-Leistungs-Verhältnis bieten", "tr": "iyi bir fiyat-performans oranı sunmak"}, {"de": "sich den Kauf noch einmal überlegen", "tr": "satın alma kararını bir kez daha düşünmek"}, {"de": "Lottozahlen ankreuzen/ziehen", "tr": "loto numaralarını işaretlemek/çekmek"}, {"de": "vom Lottogewinn träumen", "tr": "loto kazancından hayal etmek"}, {"de": "Träume können platzen.", "tr": "hayaller suya düşebilir."}, {"de": "sein Leben verändern", "tr": "hayatını değiştirmek"}, {"de": "wunschlos glücklich sein", "tr": "dilekleri olmayacak kadar mutlu olmak"}]}, {"id": "k9", "title": "Kapitel 9 — Reisen & Verkehr", "words": [{"de": "über Reiseerlebnisse berichten", "tr": "seyahat deneyimlerinden bahsetmek"}, {"de": "sich auf den Weg in fremde Länder machen", "tr": "yabancı ülkelere doğru yola çıkmak"}, {"de": "jemanden überfallen/ausrauben", "tr": "birine saldırmak/soymak"}, {"de": "einen Fluss überqueren", "tr": "bir nehri geçmek"}, {"de": "gefahrlos übernachten", "tr": "güvenli bir şekilde geceleme yapmak"}, {"de": "15 km am Tag schaffen", "tr": "günde 15 km yol katetmek"}, {"de": "seine Kenntnisse erweitern", "tr": "bilgisini genişletmek"}, {"de": "Eindrücke in einem Buch beschreiben", "tr": "izlenimleri bir kitapta anlatmak"}, {"de": "etwas Aufregendes erleben", "tr": "heyecan verici bir şey yaşamak"}, {"de": "eine Reiseapotheke mitnehmen", "tr": "seyahat eczası yanında götürmek"}, {"de": "Spaß und Abenteuer suchen", "tr": "eğlence ve macera aramak"}, {"de": "unbekannte Gebiete entdecken", "tr": "bilinmeyen bölgeleri keşfetmek"}, {"de": "von exotischen Ausflugszielen träumen", "tr": "egzotik gezi noktalarından hayal etmek"}, {"de": "verschiedene Angebote vergleichen", "tr": "farklı teklifleri karşılaştırmak"}, {"de": "die nächste Reise im Internet buchen", "tr": "bir sonraki seyahati internetten rezerve etmek"}, {"de": "an einer Expedition teilnehmen", "tr": "bir keşif gezisine katılmak"}, {"de": "ein Gebiet erforschen", "tr": "bir bölgeyi araştırmak"}, {"de": "neue Arten entdecken", "tr": "yeni türler keşfetmek"}, {"de": "eine Landkarte zeichnen", "tr": "bir harita çizmek"}, {"de": "den üblichen Stau überstehen", "tr": "olağan trafik sıkışıklığını atlatmak"}, {"de": "sich über das Zimmer beschweren", "tr": "oda hakkında şikayet etmek"}, {"de": "komplett ausgebucht sein", "tr": "tamamen dolu olmak"}, {"de": "neben einer Baustelle liegen", "tr": "bir inşaatın yanında bulunmak"}, {"de": "einen Motorschaden haben", "tr": "motor arızası yaşamak"}, {"de": "eine Ferienwohnung mieten", "tr": "bir tatil evi kiralamak"}, {"de": "Es hat sich ein Unfall ereignet.", "tr": "bir kaza meydana geldi."}, {"de": "Alle Fahrspuren sind gesperrt.", "tr": "tüm şeritler kapatıldı."}, {"de": "die Umleitung nutzen", "tr": "yönlendirmeyi/sapağı kullanmak"}, {"de": "Es kommt zu einer Verspätung.", "tr": "bir gecikme yaşanıyor."}, {"de": "um Verständnis für die Verzögerung bitten", "tr": "gecikme için anlayış istemek"}, {"de": "CO2-Emissionen verursachen", "tr": "CO2 emisyonu oluşturmak"}, {"de": "zu den größten Umweltsündern zählen", "tr": "en büyük çevre kirleticileri arasında olmak"}, {"de": "besonders klimafreundlich sein", "tr": "özellikle iklim dostu olmak"}, {"de": "öffentliche Verkehrsmittel nutzen", "tr": "toplu taşıma araçlarını kullanmak"}, {"de": "das Klima und den Geldbeutel schonen", "tr": "hem iklimi hem cüzdanı korumak"}]}, {"id": "k10", "title": "Kapitel 10 — Medien & Bücher", "words": [{"de": "eine Leseratte/ein Bücherwurm sein", "tr": "kitap kurdu olmak"}, {"de": "Die Verkaufszahlen sinken.", "tr": "satış rakamları düşüyor."}, {"de": "Die Konkurrenz ist groß.", "tr": "rekabet büyük."}, {"de": "Buchempfehlungen lesen", "tr": "kitap önerileri okumak"}, {"de": "sich zu Treffpunkten entwickeln", "tr": "buluşma noktalarına dönüşmek"}, {"de": "das Angebot erweitern", "tr": "teklifi genişletmek"}, {"de": "den Kundenkontakt intensivieren", "tr": "müşteri iletişimini yoğunlaştırmak"}, {"de": "E-Books herunterladen", "tr": "e-kitap indirmek"}, {"de": "in einem Buch blättern", "tr": "bir kitapta sayfa çevirmek"}, {"de": "ein Buch auf den Markt bringen", "tr": "bir kitabı piyasaya sürmek"}, {"de": "beim Lesen völlig abschalten", "tr": "okurken tamamen kafayı boşaltmak"}, {"de": "Bücher regen zum Nachdenken an.", "tr": "kitaplar düşündürür."}, {"de": "Im Film geht es um ...", "tr": "filmde ... konu ediliyor"}, {"de": "Der Film handelt von ...", "tr": "film ... hakkında"}, {"de": "Meine erste Wahl wäre der Film ...", "tr": "ilk tercihim ... filmi olurdu"}, {"de": "Was ist deine Meinung?", "tr": "senin fikrin ne?"}, {"de": "eine komplette Filmproduktion künstlerisch leiten", "tr": "bir film prodüksiyonunu sanatsal olarak yönetmek"}, {"de": "eine bestimmte Person darstellen", "tr": "belirli bir karakteri canlandırmak"}, {"de": "für die Bildgestaltung verantwortlich sein", "tr": "görüntü yönetiminden sorumlu olmak"}, {"de": "Kostüme entwerfen", "tr": "kostüm tasarlamak"}, {"de": "über aktuelle Ereignisse berichten", "tr": "güncel olaylar hakkında haber vermek"}, {"de": "Texte für Filme schreiben", "tr": "filmler için senaryo yazmak"}, {"de": "auf dem aktuellen Stand der Dinge sein", "tr": "güncel gelişmelerden haberdar olmak"}, {"de": "Nachrichten verfolgen und vergleichen", "tr": "haberleri takip etmek ve karşılaştırmak"}, {"de": "die Bürger wahrheitsgemäß informieren", "tr": "vatandaşları doğru bir şekilde bilgilendirmek"}, {"de": "über gute Sprachkenntnisse verfügen", "tr": "iyi dil bilgisine sahip olmak"}, {"de": "schnell Entscheidungen treffen", "tr": "hızlı kararlar almak"}, {"de": "ein aufregendes Leben führen", "tr": "heyecan verici bir hayat sürmek"}, {"de": "Vorschläge machen/unterbreiten", "tr": "öneriler sunmak"}, {"de": "zu einem Ergebnis kommen", "tr": "bir sonuca varmak"}, {"de": "eine Straße sperren", "tr": "bir yolu kapatmak"}, {"de": "eine Bombe entschärfen", "tr": "bir bombayı etkisiz hale getirmek"}]}, {"id": "k11", "title": "Kapitel 11 — Geschichte & Politik", "words": [{"de": "Die Besucher können eine Ausstellung sehen.", "tr": "ziyaretçiler bir sergi görebilir."}, {"de": "im Mittelpunkt stehen", "tr": "merkezde/odak noktasında olmak"}, {"de": "sich einem Thema widmen", "tr": "bir konuya odaklanmak"}, {"de": "eine Ausstellung konzipieren", "tr": "bir sergi tasarlamak"}, {"de": "eine Geschichte erzählen", "tr": "bir hikaye anlatmak"}, {"de": "einen authentischen Hintergrund haben", "tr": "gerçek/otantik bir geçmişe sahip olmak"}, {"de": "große Symbolkraft haben", "tr": "büyük sembolik anlam taşımak"}, {"de": "über Spenden finanziert werden", "tr": "bağışlarla finanse edilmek"}, {"de": "als Zeichen für die Freiheit gelten", "tr": "özgürlüğün bir simgesi olarak kabul edilmek"}, {"de": "die Wiedervereinigung einläuten", "tr": "birleşmenin başlangıcını müjdelemek"}, {"de": "aus verschiedenen Gebäuden bestehen", "tr": "farklı binalardan oluşmak"}, {"de": "bei Besuchern sehr beliebt sein", "tr": "ziyaretçiler arasında çok popüler olmak"}, {"de": "sich um ein Praktikum bewerben", "tr": "staj için başvurmak"}, {"de": "ein Studium abschließen", "tr": "bir eğitimi tamamlamak"}, {"de": "sich auf ein Gebiet spezialisieren", "tr": "bir alanda uzmanlaşmak"}, {"de": "praktische Erfahrungen sammeln", "tr": "pratik deneyim kazanmak"}, {"de": "gern im Team arbeiten", "tr": "ekip halinde çalışmayı sevmek"}, {"de": "offizielles Staatsoberhaupt sein", "tr": "resmi devlet başkanı olmak"}, {"de": "ein Land international vertreten", "tr": "bir ülkeyi uluslararası alanda temsil etmek"}, {"de": "die Richtlinien der Politik bestimmen", "tr": "siyasetin yönergelerini belirlemek"}, {"de": "Verträge unterzeichnen", "tr": "anlaşmaları imzalamak"}, {"de": "Minister ernennen", "tr": "bakan atamak"}, {"de": "Kompromisse schließen", "tr": "uzlaşma sağlamak"}, {"de": "Entscheidungen treffen", "tr": "kararlar almak"}, {"de": "der/die Bundeskanzler/in", "tr": "federal başbakan"}, {"de": "der/die Bundestagsabgeordnete", "tr": "federal meclis milletvekili"}, {"de": "sich für die Rechte der Frauen einsetzen", "tr": "kadın hakları için mücadele etmek"}, {"de": "wählen dürfen", "tr": "oy kullanabilmek"}, {"de": "das Wahlrecht einführen", "tr": "oy hakkını getirmek"}, {"de": "Mitbestimmungsrechte bekommen", "tr": "ortak karar verme hakları elde etmek"}, {"de": "einen Verein gründen", "tr": "bir dernek kurmak"}, {"de": "Den Vorschlag finde ich (nicht so) gut.", "tr": "öneriyi (pek) iyi bulmuyorum/buluyorum."}, {"de": "Wäre es nicht besser, wenn ...", "tr": "...-sa daha iyi olmaz mıydı?"}]}, {"id": "k12", "title": "Kapitel 12 — Erfindungen & Kreativität", "words": [{"de": "aus Gerste, Hopfen und Malz bestehen", "tr": "arpa, şerbetçiotu ve maltan oluşmak"}, {"de": "die Technik revolutionieren", "tr": "teknolojiyi devrimleştirmek"}, {"de": "ein Medikament entwickeln", "tr": "bir ilaç geliştirmek"}, {"de": "eine Theorie beweisen", "tr": "bir teoriyi kanıtlamak"}, {"de": "ein Experiment durchführen", "tr": "bir deney yapmak"}, {"de": "in Vergessenheit geraten", "tr": "unutulup gitmek"}, {"de": "als Pionier gelten", "tr": "öncü olarak kabul edilmek"}, {"de": "ein Patent beim Patentamt einreichen", "tr": "patent ofisine patent başvurusu yapmak"}, {"de": "den Kampf ums Patent gewinnen", "tr": "patent mücadelesini kazanmak"}, {"de": "eine Idee erfolgreich in die Praxis umsetzen", "tr": "bir fikri başarıyla hayata geçirmek"}, {"de": "Ideen schützen", "tr": "fikirleri korumak"}, {"de": "eine Innovation auf den Markt bringen", "tr": "piyasaya bir yenilik sunmak"}, {"de": "Erfinder finanziell unterstützen", "tr": "mucitleri mali olarak desteklemek"}, {"de": "Fantasie, Kreativität und Ausdauer brauchen", "tr": "hayal gücü, yaratıcılık ve azim gerektirmek"}, {"de": "ein bisschen verrückt sein", "tr": "biraz çılgın olmak"}, {"de": "jemandem das Leben retten", "tr": "birinin hayatını kurtarmak"}, {"de": "mit einer Idee Geld verdienen", "tr": "bir fikirle para kazanmak"}, {"de": "an den Erfolg eines Produktes glauben", "tr": "bir ürünün başarısına inanmak"}, {"de": "besondere Anlässe feiern", "tr": "özel anları kutlamak"}, {"de": "(nicht) kreativ sein", "tr": "yaratıcı ol(ma)mak"}, {"de": "über Kreativität verfügen", "tr": "yaratıcılığa sahip olmak"}, {"de": "etwas Ungewöhnliches tun", "tr": "alışılmadık bir şey yapmak"}, {"de": "die Wahrnehmung und das Denken anregen", "tr": "algıyı ve düşünceyi harekete geçirmek"}, {"de": "sich zu stark auf ein Problem konzentrieren", "tr": "bir soruna aşırı odaklanmak"}, {"de": "zu einer Blockade führen", "tr": "bir tıkanıklığa yol açmak"}, {"de": "eine Teamleistung sein", "tr": "bir takım başarısı olmak"}, {"de": "die eigenen Talente erkennen", "tr": "kendi yeteneklerini fark etmek"}, {"de": "sich während der Arbeit gestresst fühlen", "tr": "iş sırasında stresli hissetmek"}, {"de": "von Kollegen abgelenkt werden", "tr": "iş arkadaşları tarafından dikkati dağıtılmak"}, {"de": "zu ungewöhnlichen Mitteln greifen", "tr": "alışılmadık yöntemlere başvurmak"}, {"de": "Geld für Forschung ausgeben", "tr": "araştırma için para harcamak"}, {"de": "staatliche Förderung erhalten", "tr": "devlet desteği almak"}, {"de": "die Bedeutung von Innovationen erkennen", "tr": "yeniliklerin önemini anlamak"}, {"de": "Die Anzahl der Patentanmeldungen geht zurück.", "tr": "patent başvurularının sayısı azalıyor."}]}];
+
+// =============== GRAMMAR (tam B1 müfredatı) ===============
+const grammarTopics = [{"id": "nebensaetze", "tag": "Satzbau", "title": "Nebensätze: weil, obwohl, während, als, wenn", "p": "Yan cümle bağlaçları çekimli fiili cümlenin SONUNA atar. weil (çünkü, nedensellik), obwohl (rağmen, karşıtlık), während (iken/oysa), als (geçmişte bir kerelik olay), wenn (her zamanki durum ya da gelecek/şart).", "examples": [["Ich bleibe zu Hause, weil ich krank bin.", "Evde kalıyorum çünkü hastayım."], ["Obwohl es regnet, gehen wir spazieren.", "Yağmur yağmasına rağmen yürüyüşe çıkıyoruz."], ["Als ich Kind war, wohnte ich in Izmir.", "Çocukken İzmir'de oturuyordum."], ["Immer wenn ich Kaffee trinke, werde ich wach.", "Ne zaman kahve içsem, uyanık olurum."]], "quiz": [{"q": "'weil' bağlacından sonra fiil nereye gider?", "o": ["Başa", "2. pozisyona", "Cümle sonuna", "Değişmez"], "a": 2}, {"q": "Geçmişte tek seferlik bir olay için hangisi kullanılır?", "o": ["wenn", "als", "während", "obwohl"], "a": 1}, {"q": "'Rağmen/karşıtlık' anlamı veren bağlaç hangisi?", "o": ["weil", "obwohl", "als", "wenn"], "a": 1}]}, {"id": "dass_ob", "tag": "Satzbau", "title": "dass- ve ob-Sätze (İçerik ve Soru Cümleleri)", "p": "dass, bir düşünce/görüş/gerçeği aktarır (Ich glaube, dass...). ob, evet/hayır sorusunu dolaylı anlatıma çevirir (Weißt du, ob...?). Her ikisinde de fiil cümle sonuna gider.", "examples": [["Ich bin der Meinung, dass Homeoffice sinnvoll ist.", "Bence ev ofisi mantıklı."], ["Ich weiß nicht, ob er kommt.", "Gelip gelmeyeceğini bilmiyorum."], ["Er sagt, dass er später kommt.", "Daha sonra geleceğini söylüyor."]], "quiz": [{"q": "Dolaylı evet/hayır sorusu hangi bağlaçla kurulur?", "o": ["dass", "ob", "weil", "wenn"], "a": 1}, {"q": "'Ich denke, ___ das richtig ist.'", "o": ["ob", "dass", "wenn", "weil"], "a": 1}]}, {"id": "relativ", "tag": "Satzbau", "title": "Relativsätze (İlgi Cümlecikleri)", "p": "Relativpronomen isme cinsiyet/sayı bakımından uyar, hal (Fall) ise yan cümledeki göreve göre belirlenir. Nominativ: der/die/das; Akkusativ: den/die/das; Dativ: dem/der/dem; çoğul Dativ: denen. Fiil yine sona gider.", "table": {"h": ["Fall", "Eril", "Dişil", "Nötr", "Çoğul"], "r": [["Nominativ", "der", "die", "das", "die"], ["Akkusativ", "den", "die", "das", "die"], ["Dativ", "dem", "der", "dem", "denen"]]}, "examples": [["Der Mann, der dort steht, ist mein Chef.", "Orada duran adam patronum."], ["Das Buch, das ich lese, ist spannend.", "Okuduğum kitap heyecanlı."], ["Die Frau, mit der ich arbeite, ist nett.", "Birlikte çalıştığım kadın hoş biri."]], "quiz": [{"q": "'Der Kollege, ___ ich helfe, ist neu.' (helfen + Dativ)", "o": ["der", "den", "dem", "die"], "a": 2}, {"q": "'Das ist die Stadt, ___ ich liebe.' (Akkusativ, die Stadt)", "o": ["die", "der", "das", "den"], "a": 0}, {"q": "Relativsatz'da fiil nereye gider?", "o": ["2. pozisyona", "Başa", "Sona", "Değişmez"], "a": 2}]}, {"id": "passiv", "tag": "Verb", "title": "Passiv (Edilgen Çatı): Präsens & Präteritum", "p": "Vorgangspassiv: werden + Partizip II. Fail belirtilmek istenirse von + Dativ kullanılır. Präsens: wird...gemacht. Präteritum: wurde...gemacht. Perfekt: ist...gemacht worden.", "table": {"h": ["Zaman", "Yapı", "Örnek"], "r": [["Präsens", "werden + Partizip II", "Das Auto wird repariert."], ["Präteritum", "wurde + Partizip II", "Das Auto wurde repariert."], ["Perfekt", "ist/sind + Partizip II + worden", "Das Auto ist repariert worden."]]}, "examples": [["Der Vertrag wird morgen unterzeichnet.", "Sözleşme yarın imzalanacak."], ["Die Stadt wurde 830 gegründet.", "Şehir 830'da kuruldu."], ["Das Museum wird von der Stadt finanziert.", "Müze şehir tarafından finanse ediliyor."]], "quiz": [{"q": "Passiv Präsens nasıl kurulur?", "o": ["haben + Partizip II", "werden + Partizip II", "sein + Partizip II", "werden + Infinitiv"], "a": 1}, {"q": "'Das Haus ___ 1990 gebaut.' (Präteritum Passiv)", "o": ["wird", "wurde", "ist", "hat"], "a": 1}, {"q": "Faili belirtmek için hangi edat kullanılır?", "o": ["mit", "durch/von", "für", "bei"], "a": 1}]}, {"id": "konjunktiv2", "tag": "Verb", "title": "Konjunktiv II: Höflichkeit & irreale Bedingungen", "p": "würde + Infinitiv en yaygın formdur (Ich würde gerne...). sein, haben ve Modalverben genelde kendi Konjunktiv II formunu kullanır: wäre, hätte, könnte, sollte, müsste. İrreal koşul cümlelerinde de kullanılır: Wenn ich Zeit hätte, würde ich kommen.", "table": {"h": ["Fiil", "Konjunktiv II"], "r": [["sein", "wäre"], ["haben", "hätte"], ["können", "könnte"], ["müssen", "müsste"], ["werden", "würde"]]}, "examples": [["Ich würde gern nach Berlin fahren.", "Berlin'e gitmeyi çok isterim."], ["Wenn ich Zeit hätte, würde ich dich besuchen.", "Zamanım olsaydı seni ziyaret ederdim."], ["Könnten Sie mir bitte helfen?", "Bana yardım edebilir misiniz?"], ["An deiner Stelle würde ich das nicht machen.", "Senin yerinde olsam bunu yapmazdım."]], "quiz": [{"q": "'Zamanım olsaydı' nasıl denir?", "o": ["Wenn ich Zeit habe", "Wenn ich Zeit hätte", "Wenn ich Zeit hatte", "Wenn ich Zeit bin"], "a": 1}, {"q": "En yaygın kibar rica kalıbı hangisidir?", "o": ["Ich will", "Ich würde gern", "Ich muss", "Ich soll"], "a": 1}, {"q": "'können' fiilinin Konjunktiv II hali?", "o": ["kann", "konnte", "könnte", "könne"], "a": 2}]}, {"id": "plusquamperfekt", "tag": "Zaman", "title": "Plusquamperfekt (Geçmişin Geçmişi)", "p": "Bir olaydan önce gerçekleşmiş başka bir olayı anlatır. hatte/war (Präteritum) + Partizip II. Genelde nachdem bağlacıyla birlikte kullanılır: bir cümle Plusquamperfekt, diğeri Präteritum olur.", "examples": [["Nachdem ich gegessen hatte, ging ich spazieren.", "Yemek yedikten sonra yürüyüşe çıktım."], ["Sie hatte den Film schon gesehen.", "Filmi zaten görmüştü."], ["Er war schon abgefahren, als ich ankam.", "Ben vardığımda o çoktan gitmişti."]], "quiz": [{"q": "Plusquamperfekt hangi iki parçadan oluşur?", "o": ["haben/sein (Präsens) + Partizip II", "hatte/war + Partizip II", "werden + Partizip II", "haben + Infinitiv"], "a": 1}, {"q": "'nachdem' genelde hangi zamanla birlikte kullanılır?", "o": ["Futur", "Perfekt", "Plusquamperfekt + Präteritum", "Präsens"], "a": 2}]}, {"id": "genitiv", "tag": "Fall", "title": "Genitiv (Tamlama Hali)", "p": "Sahiplik/aitlik belirtir: des (eril/nötr, isme -s/-es eklenir), der (dişil/çoğul). Konuşma dilinde genelde von + Dativ ile değiştirilir ama yazı dilinde ve B1 sınavında Genitiv önemlidir.", "table": {"h": ["", "Eril", "Dişil", "Nötr", "Çoğul"], "r": [["Genitiv", "des -(e)s", "der", "des -(e)s", "der"]]}, "examples": [["die Gründung der Firma", "şirketin kuruluşu"], ["das Ende des Monats", "ayın sonu"], ["der Erfolg des Produktes", "ürünün başarısı"], ["trotz des Regens", "yağmura rağmen"]], "quiz": [{"q": "'Ende ___ Monats' (das Monat)", "o": ["das", "dem", "des", "der"], "a": 2}, {"q": "Dişil isimlerde Genitiv artikeli nedir?", "o": ["des", "dem", "der", "die"], "a": 2}, {"q": "Konuşma dilinde Genitiv yerine ne sıkça kullanılır?", "o": ["mit + Dativ", "von + Dativ", "für + Akkusativ", "zu + Dativ"], "a": 1}]}, {"id": "adjektiv", "tag": "Nomen", "title": "Adjektivdeklination (Sıfat Çekimi)", "p": "Sıfat bir isimden önce geldiğinde çekim alır. Belirli artikelden sonra zayıf çekim (-e/-en), belirsiz artikelden sonra karma çekim, artikelsizken güçlü çekim kullanılır.", "table": {"h": ["Durum", "Örnek"], "r": [["Belirli artikel", "der neue Kollege"], ["Belirsiz artikel", "ein neuer Kollege"], ["Artikelsiz", "guter Kaffee"]]}, "examples": [["Der neue Kollege ist nett.", "Yeni iş arkadaşı hoş biri."], ["Ich habe einen guten Freund.", "İyi bir arkadaşım var."], ["Frisches Obst ist gesund.", "Taze meyve sağlıklıdır."]], "quiz": [{"q": "'Das ist ein ___ Auto.' (schnell, das Auto, Nominativ)", "o": ["schnelle", "schnelles", "schneller", "schnellen"], "a": 1}, {"q": "'Ich sehe den ___ Mann.' (alt, Akkusativ, belirli artikel)", "o": ["alte", "alter", "alten", "altes"], "a": 2}]}, {"id": "praep_verben", "tag": "Verb", "title": "Verben mit festen Präpositionen", "p": "Birçok fiil sabit bir edatla kullanılır ve anlamı değiştirir: sich freuen auf/über, warten auf, sich interessieren für, denken an, träumen von, sich beschäftigen mit, sich ärgern über, teilnehmen an, sich bewerben um/für.", "examples": [["Ich freue mich auf den Urlaub.", "Tatili dört gözle bekliyorum."], ["Er wartet auf den Bus.", "Otobüsü bekliyor."], ["Sie interessiert sich für Politik.", "Siyasetle ilgileniyor."], ["Wir träumen von einer Reise.", "Bir seyahat hayali kuruyoruz."]], "quiz": [{"q": "'sich interessieren ___ Musik'", "o": ["an", "für", "auf", "von"], "a": 1}, {"q": "'Ich freue mich ___ das Wochenende.' (henüz gelmemiş bir şey)", "o": ["über", "auf", "für", "an"], "a": 1}, {"q": "'an einer Konferenz ___'", "o": ["teilnehmen", "warten", "träumen", "denken"], "a": 0}]}, {"id": "doppelkonnektoren", "tag": "Satzbau", "title": "Doppelkonnektoren", "p": "nicht nur...sondern auch (sadece değil...aynı zamanda da), sowohl...als auch (hem...hem de), entweder...oder (ya...ya da), weder...noch (ne...ne de), zwar...aber (gerçi...ama).", "examples": [["Er spricht nicht nur Deutsch, sondern auch Englisch.", "Sadece Almanca değil İngilizce de konuşuyor."], ["Sie ist sowohl klug als auch fleißig.", "Hem zeki hem çalışkan."], ["Entweder du kommst, oder du bleibst hier.", "Ya gelirsin ya da burada kalırsın."], ["Er hat weder Zeit noch Geld.", "Ne vakti ne parası var."]], "quiz": [{"q": "'Hem...hem de' anlamı hangisi?", "o": ["entweder...oder", "sowohl...als auch", "weder...noch", "nicht nur...sondern"], "a": 1}, {"q": "'Ne...ne de' anlamı hangisi?", "o": ["weder...noch", "sowohl...als auch", "zwar...aber", "entweder...oder"], "a": 0}]}, {"id": "modal_vergangenheit", "tag": "Verb", "title": "Modalverben in der Vergangenheit", "p": "Konuşma dilinde Modalverben genelde Präteritum ile kullanılır (Perfekt yerine): ich konnte, musste, wollte, durfte, sollte. Ayrıca subjektive Bedeutung: müssen (kesin olmalı), können (belki), soll (söylentiye göre).", "examples": [["Ich konnte gestern nicht kommen.", "Dün gelemedim."], ["Er musste früh aufstehen.", "Erken kalkmak zorundaydı."], ["Sie soll sehr talentiert sein.", "Çok yetenekliymiş (söylentiye göre)."], ["Das kann stimmen.", "Bu doğru olabilir."]], "quiz": [{"q": "Konuşma dilinde Modalverben genelde hangi zamanla kullanılır?", "o": ["Perfekt", "Präteritum", "Plusquamperfekt", "Futur"], "a": 1}, {"q": "'söylentiye göre' anlamını hangi Modalverb verir?", "o": ["müssen", "können", "sollen", "wollen"], "a": 2}]}, {"id": "finalsaetze", "tag": "Satzbau", "title": "um...zu / damit (Amaç Cümleleri)", "p": "um...zu, özne iki cümlede de aynıysa kullanılır ve fiil mastar halinde kalır. damit, özneler farklıysa kullanılır ve normal bir yan cümledir (fiil sona gider).", "examples": [["Ich lerne Deutsch, um in Deutschland zu arbeiten.", "Almanya'da çalışmak için Almanca öğreniyorum."], ["Ich erkläre es dir, damit du es verstehst.", "Anlaman için sana açıklıyorum."], ["Er spart Geld, um ein Auto zu kaufen.", "Araba almak için para biriktiriyor."]], "quiz": [{"q": "İki cümlenin öznesi aynıysa hangisi kullanılır?", "o": ["damit", "um...zu", "weil", "dass"], "a": 1}, {"q": "'Ich rufe an, ___ du Bescheid weißt.' (özneler farklı)", "o": ["um...zu", "damit", "weil", "als"], "a": 1}]}, {"id": "vergleich", "tag": "Satzbau", "title": "Vergleichssätze: je...desto", "p": "İki değişken arasındaki orantılı ilişkiyi anlatır: je + Komparativ (yan cümle, fiil sonda) + desto + Komparativ (ana cümle, fiil ikinci sırada).", "examples": [["Je mehr ich lerne, desto besser verstehe ich.", "Ne kadar çok öğrenirsem o kadar iyi anlarım."], ["Je früher, desto besser.", "Ne kadar erken o kadar iyi."], ["Je älter er wird, desto ruhiger wird er.", "Yaşlandıkça daha sakinleşiyor."]], "quiz": [{"q": "'je' cümlesinde fiil nereye gider?", "o": ["2. pozisyona", "Sona", "Başa", "Değişmez"], "a": 1}, {"q": "'desto' cümlesinde fiil nereye gider?", "o": ["Sona", "2. pozisyona", "Başa", "Kaybolur"], "a": 1}]}, {"id": "n_deklination", "tag": "Nomen", "title": "N-Deklination", "p": "Bazı eril isimler (genelde insan/canlı belirten -e ile bitenler: der Junge, der Kunde, der Kollege, ve bazı özel isimler: der Mensch, der Student, der Herr) Nominativ dışındaki tüm hallerde -n/-en eki alır.", "table": {"h": ["Fall", "der Student"], "r": [["Nominativ", "der Student"], ["Akkusativ", "den Studenten"], ["Dativ", "dem Studenten"], ["Genitiv", "des Studenten"]]}, "examples": [["Ich kenne den Studenten.", "Öğrenciyi tanıyorum."], ["Er hilft dem Kollegen.", "İş arkadaşına yardım ediyor."], ["Das ist das Auto des Herrn Müller.", "Bu Bay Müller'in arabası."]], "quiz": [{"q": "'Ich sehe ___ Studenten.' (Akkusativ)", "o": ["der", "den", "dem", "des"], "a": 1}, {"q": "N-Deklination çoğunlukla hangi tür isimleri etkiler?", "o": ["Dişil isimler", "İnsan/canlı belirten bazı eril isimler", "Nötr isimler", "Tüm isimler"], "a": 1}]}];
+
+// =============== STATE & STORAGE ===============
+let progress = { vocab:{}, grammar:{} };
+const hasClaudeStorage = typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function';
+async function loadProgress(){
+  try{
+    if(hasClaudeStorage){
+      const r = await window.storage.get('sprachpass-progress');
+      if(r&&r.value) progress = JSON.parse(r.value);
+    } else {
+      const v = localStorage.getItem('sprachpass-progress');
+      if(v) progress = JSON.parse(v);
+    }
+  }catch(e){}
+  render();
+}
+async function saveProgress(){
+  try{
+    if(hasClaudeStorage){ await window.storage.set('sprachpass-progress', JSON.stringify(progress)); }
+    else { localStorage.setItem('sprachpass-progress', JSON.stringify(progress)); }
+  }catch(e){ console.error(e); }
+}
+
+// =============== QUIZ ENGINE ===============
+const overlay = document.getElementById('quizOverlay');
+const quizBody = document.getElementById('quizBody');
+const quizTitle = document.getElementById('quizTitle');
+const quizProgressEl = document.getElementById('quizProgress');
+let quizState = null;
+document.getElementById('quizClose').onclick = ()=>{ overlay.classList.remove('show'); quizState=null; };
+
+function shuffle(a){ a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function startQuiz(title, questions, onPass){
+  quizState = { qs:shuffle(questions).slice(0, Math.min(questions.length,10)), i:0, score:0, onPass };
+  quizTitle.textContent = title;
+  overlay.classList.add('show');
+  showQuestion();
+}
+function showQuestion(){
+  const s = quizState; const q = s.qs[s.i];
+  quizProgressEl.textContent = `Soru ${s.i+1} / ${s.qs.length}`;
+  quizBody.innerHTML = `<p class="quiz-q">${q.q}</p><div class="quiz-opts"></div><button class="quiz-next" id="quizNext">Sonraki →</button>`;
+  const optsWrap = quizBody.querySelector('.quiz-opts');
+  q.o.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='quiz-opt'; b.textContent=opt;
+    b.onclick = ()=>{
+      if(quizBody.dataset.answered) return;
+      quizBody.dataset.answered='1';
+      if(idx===q.a){ b.classList.add('correct'); s.score++; }
+      else { b.classList.add('wrong'); optsWrap.children[q.a].classList.add('correct'); }
+      [...optsWrap.children].forEach(x=>x.disabled=true);
+      document.getElementById('quizNext').classList.add('show');
+    };
+    optsWrap.appendChild(b);
+  });
+  delete quizBody.dataset.answered;
+  document.getElementById('quizNext').onclick = ()=>{
+    s.i++;
+    if(s.i < s.qs.length) showQuestion(); else showResult();
+  };
+}
+function showResult(){
+  const s = quizState;
+  const pct = Math.round((s.score/s.qs.length)*100);
+  const pass = pct >= 75;
+  quizProgressEl.textContent = 'Test tamamlandı';
+  quizBody.innerHTML = `<div class="quiz-result">
+    <div class="score">${s.score} / ${s.qs.length}</div>
+    <p class="verdict ${pass?'pass':''}">${pass ? '✓ Geçtin! ('+pct+'%) — Damga basıldı.' : pct+'% — Geçmek için %75 gerekli. Konuyu tekrar edip yeniden dene!'}</p>
+    <button class="quiz-next show" id="quizFinish">${pass?'Harika, kapat':'Kapat'}</button>
+  </div>`;
+  document.getElementById('quizFinish').onclick = ()=>{
+    overlay.classList.remove('show');
+    if(pass && s.onPass) s.onPass();
+    quizState=null;
+  };
+}
+
+// Vocab quiz: kategori kelimelerinden dinamik çoktan seçmeli üret
+function makeVocabQuiz(cat){
+  const pool = shuffle(cat.words).slice(0, Math.min(10, cat.words.length));
+  return pool.map(w=>{
+    const wrong = shuffle(cat.words.filter(x=>x.tr!==w.tr)).slice(0,3).map(x=>x.tr);
+    const opts = shuffle([w.tr, ...wrong]);
+    return { q:`„${w.de}" ne demek?`, o:opts, a:opts.indexOf(w.tr) };
+  });
+}
+
+// =============== RENDER ===============
+function renderVocabOverview(){
+  const grid = document.getElementById('vocabOverview');
+  grid.innerHTML='';
+  let totalWords = 0;
+  vocabCategories.forEach(cat=>{
+    totalWords += cat.words.length;
+    const done = !!progress.vocab[cat.id];
+    const card = document.createElement('div');
+    card.className='cat-card'+(done?' done':'');
+    card.innerHTML=`<div class="stamp">${STAMP_SVG}</div><p class="cat-title">${cat.title}</p><p class="cat-count">${cat.words.length} kelime</p>`;
+    card.onclick=()=>openCategory(cat.id);
+    grid.appendChild(card);
+  });
+  document.getElementById('metaVocabTotal').textContent = totalWords;
+}
+
+function openCategory(catId){
+  const cat = vocabCategories.find(c=>c.id===catId);
+  document.getElementById('vocabOverview').style.display='none';
+  const detail = document.getElementById('vocabDetail');
+  detail.style.display='block';
+  const done = !!progress.vocab[cat.id];
+  detail.innerHTML=`
+    <button class="back-btn">← Kategorilere dön</button>
+    <div class="cat-header">
+      <h2>${cat.title}</h2>
+      <div class="header-btns">
+        <button class="quiz-btn" id="vocabQuizBtn">Teste Gir</button>
+        <button class="mark-btn ${done?'done':''}" id="markVocabBtn">${done?'✓ Tamamlandı':'Manuel işaretle'}</button>
+      </div>
+    </div>
+    <div class="cards" id="cardsWrap"></div>`;
+  detail.querySelector('.back-btn').onclick=()=>{detail.style.display='none'; document.getElementById('vocabOverview').style.display='grid';};
+  detail.querySelector('#markVocabBtn').onclick=()=>{
+    progress.vocab[cat.id]=!progress.vocab[cat.id]; saveProgress(); render(); openCategory(catId);
+  };
+  detail.querySelector('#vocabQuizBtn').onclick=()=>{
+    startQuiz(cat.title+' — Test', makeVocabQuiz(cat), ()=>{
+      progress.vocab[cat.id]=true; saveProgress(); render(); openCategory(catId);
+    });
+  };
+  const wrap = detail.querySelector('#cardsWrap');
+  cat.words.forEach(w=>{
+    const c=document.createElement('div'); c.className='flashcard';
+    const hasArt = !!w.article;
+    const word = hasArt ? w.de.replace(/^(der|die|das)\s/,'') : w.de;
+    c.innerHTML=`<div class="de">${hasArt?`<span class="article">${w.article}</span>`:''}${word}</div><div class="tr">${w.tr}</div><div class="hint">çevir</div>`;
+    c.onclick=()=>c.classList.toggle('flipped');
+    wrap.appendChild(c);
+  });
+}
+
+function renderGrammar(){
+  const list = document.getElementById('grammarList');
+  list.innerHTML='';
+  grammarTopics.forEach(t=>{
+    const done = !!progress.grammar[t.id];
+    const el = document.createElement('div');
+    el.className='topic'+(done?' done':'');
+    let tableHtml='';
+    if(t.table){
+      tableHtml = `<div class="table-scroll"><table class="gtable"><tr>${t.table.h.map(h=>`<th>${h}</th>`).join('')}</tr>${t.table.r.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+    }
+    const examplesHtml = t.examples.map(ex=>`<div class="example-box">${ex[0]}<span class="tr-line">${ex[1]}</span></div>`).join('');
+    el.innerHTML=`
+      <div class="stamp" style="top:10px;right:44px;">${STAMP_SVG}</div>
+      <div class="topic-head">
+        <div><span class="topic-tag">${t.tag}</span><h3>${t.title}</h3></div>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="topic-body">
+        <p>${t.p}</p>
+        ${tableHtml}
+        ${examplesHtml}
+        <div class="topic-actions">
+          <button class="topic-quiz-btn">Konu Testi (${t.quiz.length} soru)</button>
+          <button class="topic-mark ${done?'done':''}">${done?'✓ Tamamlandı':'Manuel işaretle'}</button>
+        </div>
+      </div>`;
+    el.querySelector('.topic-head').onclick=()=>el.classList.toggle('open');
+    el.querySelector('.topic-mark').onclick=(e)=>{
+      e.stopPropagation();
+      progress.grammar[t.id]=!progress.grammar[t.id]; saveProgress(); render();
+    };
+    el.querySelector('.topic-quiz-btn').onclick=(e)=>{
+      e.stopPropagation();
+      startQuiz(t.title+' — Test', t.quiz, ()=>{ progress.grammar[t.id]=true; saveProgress(); render(); });
+    };
+    list.appendChild(el);
+  });
+  document.getElementById('metaGrammarTotal').textContent = grammarTopics.length;
+}
+
+function updateProgressBar(){
+  const total = vocabCategories.length + grammarTopics.length;
+  const done = Object.values(progress.vocab).filter(Boolean).length + Object.values(progress.grammar).filter(Boolean).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('metaStatus').textContent = pct===100?'Tamamlandı 🎉':(pct===0?'Başlanmadı':'Devam ediyor');
+}
+
+function render(){ renderVocabOverview(); renderGrammar(); updateProgressBar(); }
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const target=tab.dataset.tab;
+    document.getElementById('page-wortschatz').style.display = target==='wortschatz'?'block':'none';
+    document.getElementById('page-grammatik').style.display = target==='grammatik'?'block':'none';
+  };
+});
+
+loadProgress();
+</script>
+</body>
+</html>
