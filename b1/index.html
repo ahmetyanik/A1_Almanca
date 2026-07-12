@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F1EBDA">
 <title>Sprachpass — Deutsch B1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
+    color-scheme: light only;
     --paper:#F1EBDA; --paper-dark:#E7DFC7;
     --navy:#1E2B45; --navy-deep:#131D30;
     --stamp-red:#A23A2A; --stamp-gold:#AD8A2E;
@@ -15,7 +18,7 @@
     --line:#C9BFA0; --green:#3F6B4F; --wrong:#9C3B3B;
   }
   *{box-sizing:border-box;}
-  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; forced-color-adjust:none;}
   .app{max-width:920px; margin:0 auto; padding:0 0 60px;
     background:repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(43,38,32,0.035) 28px); min-height:100vh;}
 
@@ -62,14 +65,15 @@
   .mark-btn.done{background:var(--green);}
   .quiz-btn{background:var(--stamp-red); color:#fff;}
 
-  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px;}
+  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; align-items:start;}
   .flashcard{background:#fff; border:1px solid var(--line); border-radius:3px; padding:14px 16px; cursor:pointer;
-    min-height:96px; display:flex; flex-direction:column; justify-content:center; position:relative;}
+    min-height:96px; height:auto; overflow:visible; display:block; position:relative;
+    word-break:break-word; overflow-wrap:break-word;}
   .flashcard .de{font-family:'Fraunces',serif; font-weight:600; font-size:15.5px; line-height:1.35; color:var(--navy);}
   .flashcard .article{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--stamp-red); margin-right:6px;}
   .flashcard .tr{margin-top:7px; font-size:13.5px; color:var(--ink-soft); display:none;}
   .flashcard.flipped .tr{display:block;}
-  .flashcard .hint{position:absolute; bottom:7px; right:10px; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--line);}
+  .flashcard .hint{display:block; text-align:right; margin-top:8px; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--line);}
 
   .topic-list{display:flex; flex-direction:column; gap:10px;}
   .topic{background:#fff; border:1px solid var(--line); border-radius:3px; position:relative; overflow:hidden;}
